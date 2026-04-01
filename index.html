@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在與再的馬卡龍小練習</title>
+    <script src="https://unpkg.com/pinyin-pro"></script>
+    <style>
+        :root {
+            --bg-color: #fffaf0;
+            --text-color: #6a5c55;
+            --macaron-pink: #ffb6c1;
+            --macaron-blue: #a0e7e5;
+            --macaron-green: #b9fbc0;
+            --macaron-yellow: #fdfd96;
+            --macaron-red: #ffabab;
+            --macaron-purple: #e3aadd;
+            --card-shadow: #f0e6d2;
+            --macaron-grey: #d4eaf3;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white;
+            width: 95%;
+            max-width: 650px;
+            margin-top: 30px;
+            padding: 40px 20px;
+            border-radius: 50px;
+            box-shadow: 0 15px 0 var(--card-shadow);
+            text-align: center;
+            border: 5px solid white;
+        }
+
+        h1 { font-size: 32px; margin-bottom: 20px; color: #ff8b94; }
+
+        .question-area { position: relative; margin: 10px 0; }
+
+        #question {
+            font-size: 46px;
+            line-height: 2.5; /* 稍微增加行高，給注音留空間 */
+            margin: 15px 0;
+            color: #4a4a4a;
+            min-height: 140px;
+            text-align: left;
+            padding: 0 40px;
+            display: block;
+            word-break: break-all;
+        }
+
+        /* 注音樣式微調 */
+        rt { font-size: 18px; color: #d9534f; font-weight: bold; }
+        ruby { ruby-align: center; margin-right: 2px; }
+
+        .blank {
+            display: inline-block;
+            min-width: 60px;
+            height: 10px;
+            margin: 0 8px;
+            border-bottom: 6px solid var(--macaron-red);
+            vertical-align: middle;
+        }
+
+        .btn-speak {
+            background-color: white;
+            border: 4px solid var(--macaron-grey);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #9dd2d0;
+            transition: all 0.2s ease-out;
+            margin-bottom: 10px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-speak svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--macaron-blue);
+        }
+
+        .btn-speak:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #a8f1ef;
+        }
+
+        .btn {
+            font-size: 28px;
+            padding: 18px 45px;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            margin: 10px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-choice {
+            font-size: 100px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-at { background-color: #88d8b0; box-shadow: 0 10px 0 #6fbc97; }
+        .btn-again { background-color: var(--macaron-blue); color: #55acb0; box-shadow: 0 10px 0 #89cdcb; }
+
+        #feedback {
+            font-size: 250px;
+            position: fixed;
+            top: 20%;
+            pointer-events: none;
+            display: none;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .wrong-item {
+            background: #fff0f0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 25px;
+            border-left: 12px solid var(--macaron-red);
+            font-size: 28px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="menu" class="card">
+        <h1>🐰「在」與「再」的練習 🐱</h1>
+        <button class="btn btn-base" style="background-color: var(--macaron-pink); width: 85%;" onclick="startQuiz('base')">基礎練習</button>
+        <button class="btn btn-adv" style="background-color: var(--macaron-purple); width: 85%;" onclick="startQuiz('adv')">進階挑戰</button>
+    </div>
+
+    <div id="quiz-container" class="card" style="display:none;">
+        <div id="progress" style="font-weight: bold; color: #ccb; margin-bottom: 5px;"></div>
+        <div class="question-area">
+            <button class="btn-speak" onclick="playCurrentAudio()">
+                <svg viewBox="0 0 24 24"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.07,19.86 21,16.28 21,12C21,7.72 18.07,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16.03C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" /></svg>
+            </button>
+            <div id="question"></div>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 30px;">
+            <button class="btn btn-choice btn-at" onclick="handleChoice('在')">在</button>
+            <button class="btn btn-choice btn-again" onclick="handleChoice('再')">再</button>
+        </div>
+    </div>
+
+    <div id="result-container" class="card" style="display:none;">
+        <h1>🌈 完成練習！</h1>
+        <div id="summary" style="font-size: 24px; margin-bottom: 20px; color: #ff8b94;"></div>
+        <div id="wrong-detail"></div>
+        <button class="btn" style="background-color: var(--macaron-blue); color: #55acb0; width: 85%;" onclick="location.reload()">回首頁</button>
+    </div>
+
+    <div id="feedback"></div>
+
+    <script>
+        const allData = [
+            { q: "我( )聽音樂，妹妹( )唱歌。", a: "在", level: "base" },
+            { q: "你能這麼想，真是( )好不過了。", a: "再", level: "adv" },
+            { q: "我要先把功課寫完，( )看電視。", a: "再", level: "base" },
+            { q: "我喜歡一個人( )家裡看電視。", a: "在", level: "base" },
+            { q: "小倫( )音樂方面表現特別傑出。", a: "在", level: "adv" },
+            { q: "失敗了，不要氣餒，要( )接( )厲！", a: "再", level: "base" },
+            { q: "今年春節，我們一家人打算( )外婆家度過。", a: "在", level: "base" },
+            { q: "( )不下雨，水庫就要沒水了。", a: "再", level: "base" },
+            { q: "小康大聲的說：「沒問題！包( )我身上！」", a: "在", level: "adv" },
+            { q: "爸爸坐( )椅子上看報紙。", a: "在", level: "base" },
+            { q: "我們依依不捨的向外公說：「( )見！」", a: "再", level: "base" },
+            { q: "老師傅對於捏麵人的工夫很( )行。", a: "在", level: "adv" },
+            { q: "診所裡掛著一塊「華陀( )世」的匾額。", a: "再", level: "adv" },
+            { q: "這是利用( )生紙製作成的筆記本。", a: "再", level: "base" },
+            { q: "老師叮嚀我們對於別人的幫助，要感謝( )心。", a: "在", level: "adv" },
+            { q: "媽媽一而( )、( )而三的提醒我。", a: "再", level: "adv" },
+            { q: "小榮對這件事顯得十分( )意。", a: "在", level: "base" },
+            { q: "如果你( )不快點去換衣服，就要來不及上學了！！", a: "再", level: "base" },
+            { q: "花多少錢我也( )所不惜！", a: "在", level: "adv" },
+            { q: "老師站( )講臺上說：「我們再來一次！」", a: "在", level: "base" },
+            { q: "如果你( )說一次不禮貌的話...", a: "再", level: "base" },
+            { q: "媽媽正( )說故事給弟弟聽。", a: "在", level: "base" },
+            { q: "剩下的事情我們下次( )說吧！", a: "再", level: "base" },
+            { q: "別人正( )講電話的時候，我們要保持安靜。", a: "在", level: "base" },
+            { q: "不要一錯( )錯！", a: "再", level: "base" },
+            { q: "下雨了不能出去，( )說我的功課也還沒寫完。", a: "再", level: "base" },
+            { q: "今年參加運動會的班級，也包括我們( )內。", a: "在", level: "adv" },
+            { q: "我一( )的叮嚀，他仍然粗心犯錯。", a: "再", level: "base" },
+            { q: "這種事情( )所難免，你就別太( )意了吧！", a: "在", level: "adv" },
+            { q: "( )這樣下去，我們就取消這次的郊遊。", a: "再", level: "base" }
+        ];
+
+        let quizData = [];
+        let cur = 0;
+        let wrongList = [];
+
+        function startQuiz(lv) {
+            quizData = allData.filter(d => d.level === lv);
+            cur = 0;
+            wrongList = [];
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            show();
+        }
+
+        function show() {
+            const data = quizData[cur];
+            document.getElementById('progress').innerText = `🍭 進度：${cur + 1} / ${quizData.length}`;
+
+            const questionText = data.q;
+            // 使用 pinyin-pro 進行注音轉換
+            const { pinyin } = pinyin_pro;
+            const zhuyinArray = pinyin(questionText, { type: 'zhuyin', nonZhuyin: 'passthrough' }).split(' ');
+
+            let htmlContent = '';
+            let charIndex = 0;
+
+            // 遍歷字串，為每個中文字加上 ruby 標籤
+            [...questionText].forEach((char) => {
+                if (/[\u4e00-\u9fa5]/.test(char)) {
+                    htmlContent += `<ruby>${char}<rt>${zhuyinArray[charIndex] || ''}</rt></ruby>`;
+                    charIndex++;
+                } else if (char === '(') {
+                    // 偵測括號填空區
+                    htmlContent += '<span class="blank"></span>';
+                    // 略過 ( ) 部分的注音索引
+                    charIndex += 1;
+                } else if (char === ' ' || char === ')') {
+                    // 忽略括號內的空格與右括號
+                    return;
+                } else {
+                    htmlContent += char;
+                    charIndex++;
+                }
+            });
+
+            document.getElementById('question').innerHTML = htmlContent;
+        }
+
+        function playCurrentAudio() {
+            const data = quizData[cur];
+            speak(data.q.replace(/\( \)/g, data.a));
+        }
+
+        function handleChoice(val) {
+            const fb = document.getElementById('feedback');
+            const ans = quizData[cur].a;
+            fb.style.display = 'block';
+            if (val === ans) {
+                fb.innerText = '○'; fb.style.color = '#a2d2ff';
+                setTimeout(() => {
+                    fb.style.display = 'none'; cur++;
+                    if (cur < quizData.length) show(); else finish();
+                }, 700);
+            } else {
+                fb.innerText = '×'; fb.style.color = '#ffabab';
+                const item = quizData[cur].q.replace('( )', `(${ans})`);
+                if (!wrongList.includes(item)) wrongList.push(item);
+                setTimeout(() => fb.style.display = 'none', 700);
+            }
+        }
+
+        function finish() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            const sum = document.getElementById('summary');
+            if (wrongList.length === 0) sum.innerHTML = "🎉 太棒了！全對喔！100分！！！";
+            else {
+                sum.innerText = "完成囉！複習一下答錯的題目：";
+                document.getElementById('wrong-detail').innerHTML = wrongList.map(t => `<div class="wrong-item">${t}</div>`).join('');
+            }
+        }
+
+        function speak(t) {
+            window.speechSynthesis.cancel();
+            const m = new SpeechSynthesisUtterance(t); m.lang = 'zh-TW'; m.rate = 0.85;
+            window.speechSynthesis.speak(m);
+        }
+    </script>
+</body>
+</html>
