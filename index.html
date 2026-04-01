@@ -49,7 +49,7 @@
 
         #question {
             font-size: 46px;
-            line-height: 2.5; /* 稍微增加行高，給注音留空間 */
+            line-height: 2.5;
             margin: 15px 0;
             color: #4a4a4a;
             min-height: 140px;
@@ -59,7 +59,6 @@
             word-break: break-all;
         }
 
-        /* 注音樣式微調 */
         rt { font-size: 18px; color: #d9534f; font-weight: bold; }
         ruby { ruby-align: center; margin-right: 2px; }
 
@@ -146,9 +145,9 @@
 <body>
 
     <div id="menu" class="card">
-        <h1>🐰「在」與「再」的練習 🐱</h1>
-        <button class="btn btn-base" style="background-color: var(--macaron-pink); width: 85%;" onclick="startQuiz('base')">基礎練習</button>
-        <button class="btn btn-adv" style="background-color: var(--macaron-purple); width: 85%;" onclick="startQuiz('adv')">進階挑戰</button>
+        <h1>🩷「在」與「再」的愛心練習 💖</h1>
+        <button class="btn btn-base" style="background-color: var(--macaron-pink); width: 85%;" onclick="startQuiz('base')">🩷 基礎練習</button>
+        <button class="btn btn-adv" style="background-color: var(--macaron-purple); width: 85%;" onclick="startQuiz('adv')">💖 進階挑戰</button>
     </div>
 
     <div id="quiz-container" class="card" style="display:none;">
@@ -221,38 +220,36 @@
             show();
         }
 
+        // 重新優化的注音渲染邏輯
         function show() {
             const data = quizData[cur];
-            document.getElementById('progress').innerText = `🍭 進度：${cur + 1} / ${quizData.length}`;
+            document.getElementById('progress').innerText = `🩷 進度：${cur + 1} / ${quizData.length}`;
 
-            const questionText = data.q;
-            // 使用 pinyin-pro 進行注音轉換
+            // 先將題目中的括號區塊標記為特殊佔位符，避免干擾注音計算
+            const rawText = data.q;
+            const segments = rawText.split(/\( \)/);
+
             const { pinyin } = pinyin_pro;
-            const zhuyinArray = pinyin(questionText, { type: 'zhuyin', nonZhuyin: 'passthrough' }).split(' ');
+            let finalHtml = '';
 
-            let htmlContent = '';
-            let charIndex = 0;
+            segments.forEach((seg, index) => {
+                // 處理文字段落的注音
+                const zhuyins = pinyin(seg, { type: 'zhuyin', nonZhuyin: 'passthrough' }).split(' ');
+                [...seg].forEach((char, i) => {
+                    if (/[\u4e00-\u9fa5]/.test(char)) {
+                        finalHtml += `<ruby>${char}<rt>${zhuyins[i] || ''}</rt></ruby>`;
+                    } else {
+                        finalHtml += char;
+                    }
+                });
 
-            // 遍歷字串，為每個中文字加上 ruby 標籤
-            [...questionText].forEach((char) => {
-                if (/[\u4e00-\u9fa5]/.test(char)) {
-                    htmlContent += `<ruby>${char}<rt>${zhuyinArray[charIndex] || ''}</rt></ruby>`;
-                    charIndex++;
-                } else if (char === '(') {
-                    // 偵測括號填空區
-                    htmlContent += '<span class="blank"></span>';
-                    // 略過 ( ) 部分的注音索引
-                    charIndex += 1;
-                } else if (char === ' ' || char === ')') {
-                    // 忽略括號內的空格與右括號
-                    return;
-                } else {
-                    htmlContent += char;
-                    charIndex++;
+                // 在段落之間插入空格底線（最後一個段落後不插）
+                if (index < segments.length - 1) {
+                    finalHtml += '<span class="blank"></span>';
                 }
             });
 
-            document.getElementById('question').innerHTML = htmlContent;
+            document.getElementById('question').innerHTML = finalHtml;
         }
 
         function playCurrentAudio() {
