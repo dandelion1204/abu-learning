@@ -1,296 +1,159 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在與再的馬卡龍小練習</title>
-    <script src="https://unpkg.com/pinyin-pro"></script>
+    <title>我的學習樂園</title>
     <style>
         :root {
-            --bg-color: #fffaf0;
-            --text-color: #6a5c55;
-            --macaron-pink: #ffb6c1;
-            --macaron-blue: #a0e7e5;
-            --macaron-green: #b9fbc0;
-            --macaron-yellow: #fdfd96;
-            --macaron-red: #ffabab;
-            --macaron-purple: #e3aadd;
-            --card-shadow: #f0e6d2;
-            --macaron-grey: #d4eaf3;
+            --primary-pink: #ffafbd;
+            --primary-orange: #ffc3a0;
+            --bg-color: #fff9f0;
+            --text-color: #5d5d5d;
+            --card-bg: #ffffff;
+            --accent-blue: #a1c4fd;
+            --accent-green: #c2e9fb;
         }
 
         body {
             font-family: "Microsoft JhengHei", sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 0;
-            padding: 20px;
             min-height: 100vh;
         }
 
-        .card {
-            background: white;
-            width: 95%;
-            max-width: 650px;
-            margin-top: 30px;
-            padding: 40px 20px;
-            border-radius: 50px;
-            box-shadow: 0 15px 0 var(--card-shadow);
+        header {
+            margin-top: 50px;
             text-align: center;
-            border: 5px solid white;
         }
 
-        h1 { font-size: 32px; margin-bottom: 20px; color: #ff8b94; }
-
-        .question-area { position: relative; margin: 10px 0; }
-
-        #question {
-            font-size: 46px;
-            line-height: 2.5;
-            margin: 15px 0;
-            color: #4a4a4a;
-            min-height: 140px;
-            text-align: left;
-            padding: 0 40px;
-            display: block;
-            word-break: break-all;
+        h1 {
+            font-size: 2.5rem;
+            color: #ff8a80;
+            letter-spacing: 2px;
         }
 
-        rt { font-size: 18px; color: #d9534f; font-weight: bold; }
-        ruby { ruby-align: center; margin-right: 2px; }
-
-        .blank {
-            display: inline-block;
-            min-width: 60px;
-            height: 10px;
-            margin: 0 8px;
-            border-bottom: 6px solid var(--macaron-red);
-            vertical-align: middle;
+        /* SVG 圖示基礎樣式 */
+        .svg-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            transition: transform 0.5s ease;
         }
 
-        .btn-speak {
-            background-color: white;
-            border: 4px solid var(--macaron-grey);
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #9dd2d0;
-            transition: all 0.2s ease-out;
-            margin-bottom: 10px;
-            display: inline-flex;
+        /* 讓 SVG 動起來 */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 30px;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            width: 260px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-speak svg {
-            width: 40px;
-            height: 40px;
-            fill: var(--macaron-blue);
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 175, 189, 0.4);
         }
 
-        .btn-speak:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #a8f1ef;
+        .card:hover .svg-icon {
+            animation: float 2s infinite ease-in-out;
+        }
+
+        .card h2 {
+            margin: 10px 0;
+            font-size: 1.4rem;
+            color: #444;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #888;
+            line-height: 1.5;
         }
 
         .btn {
-            font-size: 28px;
-            padding: 18px 45px;
-            cursor: pointer;
-            border: none;
-            border-radius: 30px;
-            margin: 10px;
-            font-weight: bold;
+            margin-top: 20px;
+            padding: 8px 30px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-orange));
             color: white;
-            box-shadow: 0 8px 0 rgba(0,0,0,0.1);
-        }
-
-        .btn-choice {
-            font-size: 100px;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .btn-at { background-color: #88d8b0; box-shadow: 0 10px 0 #6fbc97; }
-        .btn-again { background-color: var(--macaron-blue); color: #55acb0; box-shadow: 0 10px 0 #89cdcb; }
-
-        #feedback {
-            font-size: 250px;
-            position: fixed;
-            top: 20%;
-            pointer-events: none;
-            display: none;
+            border-radius: 50px;
             font-weight: bold;
-            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255, 175, 189, 0.4);
         }
 
-        .wrong-item {
-            background: #fff0f0;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 25px;
-            border-left: 12px solid var(--macaron-red);
-            font-size: 28px;
-            text-align: left;
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            color: #ccc;
         }
     </style>
 </head>
 <body>
 
-    <div id="menu" class="card">
-        <h1>🩷「在」與「再」的愛心練習 💖</h1>
-        <button class="btn btn-base" style="background-color: var(--macaron-pink); width: 85%;" onclick="startQuiz('base')">🩷 基礎練習</button>
-        <button class="btn btn-adv" style="background-color: var(--macaron-purple); width: 85%;" onclick="startQuiz('adv')">💖 進階挑戰</button>
+    <header>
+        <h1>🧁 學習小基地 🧁</h1>
+        <p style="color: #9e9e9e;">探索新知識，每天進步一點點！</p>
+    </header>
+
+    <div class="container">
+
+        <a href="caculate.html" class="card">
+            <svg class="svg-icon" viewBox="0 0 100 100">
+                <rect x="10" y="10" width="80" height="80" rx="15" fill="#a1c4fd" />
+                <rect x="20" y="20" width="60" height="40" rx="5" fill="#fff" />
+                <path d="M30 75 H70 M50 65 V85" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+                <circle cx="25" cy="25" r="3" fill="#ffafbd" />
+            </svg>
+            <h2>18以內加減法</h2>
+            <p>算術小達人就是你！</p>
+            <div class="btn">出發</div>
+        </a>
+
+        <a href="atandagain.html" class="card">
+            <svg class="svg-icon" viewBox="0 0 100 100">
+                <path d="M20 20 L80 20 L80 80 L20 80 Z" fill="#ffc3a0" />
+                <path d="M20 20 L50 10 L80 20" fill="#ffafbd" />
+                <rect x="35" y="35" width="30" height="5" rx="2" fill="#fff" />
+                <rect x="35" y="50" width="30" height="5" rx="2" fill="#fff" />
+                <rect x="35" y="65" width="20" height="5" rx="2" fill="#fff" />
+            </svg>
+            <h2>分別在與再</h2>
+            <p>字字珠璣，不再寫錯字。</p>
+            <div class="btn">出發</div>
+        </a>
+
     </div>
 
-    <div id="quiz-container" class="card" style="display:none;">
-        <div id="progress" style="font-weight: bold; color: #ccb; margin-bottom: 5px;"></div>
-        <div class="question-area">
-            <button class="btn-speak" onclick="playCurrentAudio()">
-                <svg viewBox="0 0 24 24"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.07,19.86 21,16.28 21,12C21,7.72 18.07,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16.03C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" /></svg>
-            </button>
-            <div id="question"></div>
-        </div>
-        <div style="display: flex; justify-content: center; gap: 30px;">
-            <button class="btn btn-choice btn-at" onclick="handleChoice('在')">在</button>
-            <button class="btn btn-choice btn-again" onclick="handleChoice('再')">再</button>
-        </div>
-    </div>
+    <footer>
+        - Keep Growing -
+    </footer>
 
-    <div id="result-container" class="card" style="display:none;">
-        <h1>🌈 完成練習！</h1>
-        <div id="summary" style="font-size: 24px; margin-bottom: 20px; color: #ff8b94;"></div>
-        <div id="wrong-detail"></div>
-        <button class="btn" style="background-color: var(--macaron-blue); color: #55acb0; width: 85%;" onclick="location.reload()">回首頁</button>
-    </div>
-
-    <div id="feedback"></div>
-
-    <script>
-        const allData = [
-            { q: "我( )聽音樂，妹妹( )唱歌。", a: "在", level: "base" },
-            { q: "你能這麼想，真是( )好不過了。", a: "再", level: "adv" },
-            { q: "我要先把功課寫完，( )看電視。", a: "再", level: "base" },
-            { q: "我喜歡一個人( )家裡看電視。", a: "在", level: "base" },
-            { q: "小倫( )音樂方面表現特別傑出。", a: "在", level: "adv" },
-            { q: "失敗了，不要氣餒，要( )接( )厲！", a: "再", level: "base" },
-            { q: "今年春節，我們一家人打算( )外婆家度過。", a: "在", level: "base" },
-            { q: "( )不下雨，水庫就要沒水了。", a: "再", level: "base" },
-            { q: "小康大聲的說：「沒問題！包( )我身上！」", a: "在", level: "adv" },
-            { q: "爸爸坐( )椅子上看報紙。", a: "在", level: "base" },
-            { q: "我們依依不捨的向外公說：「( )見！」", a: "再", level: "base" },
-            { q: "老師傅對於捏麵人的工夫很( )行。", a: "在", level: "adv" },
-            { q: "診所裡掛著一塊「華陀( )世」的匾額。", a: "再", level: "adv" },
-            { q: "這是利用( )生紙製作成的筆記本。", a: "再", level: "base" },
-            { q: "老師叮嚀我們對於別人的幫助，要感謝( )心。", a: "在", level: "adv" },
-            { q: "媽媽一而( )、( )而三的提醒我。", a: "再", level: "adv" },
-            { q: "小榮對這件事顯得十分( )意。", a: "在", level: "base" },
-            { q: "如果你( )不快點去換衣服，就要來不及上學了！！", a: "再", level: "base" },
-            { q: "花多少錢我也( )所不惜！", a: "在", level: "adv" },
-            { q: "老師站( )講臺上說：「我們再來一次！」", a: "在", level: "base" },
-            { q: "如果你( )說一次不禮貌的話...", a: "再", level: "base" },
-            { q: "媽媽正( )說故事給弟弟聽。", a: "在", level: "base" },
-            { q: "剩下的事情我們下次( )說吧！", a: "再", level: "base" },
-            { q: "別人正( )講電話的時候，我們要保持安靜。", a: "在", level: "base" },
-            { q: "不要一錯( )錯！", a: "再", level: "base" },
-            { q: "下雨了不能出去，( )說我的功課也還沒寫完。", a: "再", level: "base" },
-            { q: "今年參加運動會的班級，也包括我們( )內。", a: "在", level: "adv" },
-            { q: "我一( )的叮嚀，他仍然粗心犯錯。", a: "再", level: "base" },
-            { q: "這種事情( )所難免，你就別太( )意了吧！", a: "在", level: "adv" },
-            { q: "( )這樣下去，我們就取消這次的郊遊。", a: "再", level: "base" }
-        ];
-
-        let quizData = [];
-        let cur = 0;
-        let wrongList = [];
-
-        function startQuiz(lv) {
-            quizData = allData.filter(d => d.level === lv);
-            cur = 0;
-            wrongList = [];
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('quiz-container').style.display = 'block';
-            show();
-        }
-
-        // 重新優化的注音渲染邏輯
-        function show() {
-            const data = quizData[cur];
-            document.getElementById('progress').innerText = `🩷 進度：${cur + 1} / ${quizData.length}`;
-
-            // 先將題目中的括號區塊標記為特殊佔位符，避免干擾注音計算
-            const rawText = data.q;
-            const segments = rawText.split(/\( \)/);
-
-            const { pinyin } = pinyin_pro;
-            let finalHtml = '';
-
-            segments.forEach((seg, index) => {
-                // 處理文字段落的注音
-                const zhuyins = pinyin(seg, { type: 'zhuyin', nonZhuyin: 'passthrough' }).split(' ');
-                [...seg].forEach((char, i) => {
-                    if (/[\u4e00-\u9fa5]/.test(char)) {
-                        finalHtml += `<ruby>${char}<rt>${zhuyins[i] || ''}</rt></ruby>`;
-                    } else {
-                        finalHtml += char;
-                    }
-                });
-
-                // 在段落之間插入空格底線（最後一個段落後不插）
-                if (index < segments.length - 1) {
-                    finalHtml += '<span class="blank"></span>';
-                }
-            });
-
-            document.getElementById('question').innerHTML = finalHtml;
-        }
-
-        function playCurrentAudio() {
-            const data = quizData[cur];
-            speak(data.q.replace(/\( \)/g, data.a));
-        }
-
-        function handleChoice(val) {
-            const fb = document.getElementById('feedback');
-            const ans = quizData[cur].a;
-            fb.style.display = 'block';
-            if (val === ans) {
-                fb.innerText = '○'; fb.style.color = '#a2d2ff';
-                setTimeout(() => {
-                    fb.style.display = 'none'; cur++;
-                    if (cur < quizData.length) show(); else finish();
-                }, 700);
-            } else {
-                fb.innerText = '×'; fb.style.color = '#ffabab';
-                const item = quizData[cur].q.replace('( )', `(${ans})`);
-                if (!wrongList.includes(item)) wrongList.push(item);
-                setTimeout(() => fb.style.display = 'none', 700);
-            }
-        }
-
-        function finish() {
-            document.getElementById('quiz-container').style.display = 'none';
-            document.getElementById('result-container').style.display = 'block';
-            const sum = document.getElementById('summary');
-            if (wrongList.length === 0) sum.innerHTML = "🎉 太棒了！全對喔！100分！！！";
-            else {
-                sum.innerText = "完成囉！複習一下答錯的題目：";
-                document.getElementById('wrong-detail').innerHTML = wrongList.map(t => `<div class="wrong-item">${t}</div>`).join('');
-            }
-        }
-
-        function speak(t) {
-            window.speechSynthesis.cancel();
-            const m = new SpeechSynthesisUtterance(t); m.lang = 'zh-TW'; m.rate = 0.85;
-            window.speechSynthesis.speak(m);
-        }
-    </script>
 </body>
 </html>

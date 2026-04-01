@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在與再的小練習</title>
+    <style>
+        :root {
+            --bg-color: #fffaf0;
+            --text-color: #6a5c55;
+            --macaron-pink: #ffb6c1;
+            --macaron-blue: #a0e7e5;
+            --macaron-red: #ffabab;
+            --macaron-purple: #e3aadd;
+            --card-shadow: #f0e6d2;
+            --macaron-grey: #d4eaf3;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* --- 回首頁按鈕樣式 --- */
+        .home-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: white;
+            border: 4px solid var(--macaron-grey);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            z-index: 1001;
+        }
+
+        .home-link:hover {
+            transform: scale(1.1);
+            background-color: #eae7e7;
+        }
+
+        .home-link svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--macaron-blue);
+        }
+
+        .card {
+            background: white;
+            width: 95%;
+            max-width: 650px;
+            margin-top: 30px;
+            padding: 40px 20px;
+            border-radius: 50px;
+            box-shadow: 0 15px 0 var(--card-shadow);
+            text-align: center;
+            border: 5px solid white;
+        }
+
+        h1 { font-size: 32px; margin-bottom: 20px; color: #ff8b94; }
+
+        .question-area { position: relative; margin: 10px 0; }
+
+        #question {
+            font-size: 44px;
+            line-height: 2.8;
+            margin: 15px 0;
+            color: #4a4a4a;
+            min-height: 160px;
+            text-align: left;
+            padding: 0 40px;
+        }
+
+        rt { font-size: 18px; color: #d9534f; font-weight: bold; }
+        ruby { ruby-align: center; margin-right: 4px; }
+
+        .blank {
+            display: inline-block;
+            min-width: 60px;
+            height: 10px;
+            margin: 0 8px;
+            border-bottom: 6px solid var(--macaron-red);
+            vertical-align: middle;
+        }
+
+        .btn-speak {
+            background-color: white;
+            border: 4px solid var(--macaron-grey);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #9dd2d0;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-speak svg { width: 40px; height: 40px; fill: var(--macaron-blue); }
+
+        .btn {
+            font-size: 28px;
+            padding: 18px 45px;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            margin: 10px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-choice {
+            font-size: 100px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-at { background-color: #88d8b0; box-shadow: 0 10px 0 #6fbc97; }
+        .btn-again { background-color: var(--macaron-blue); color: #55acb0; box-shadow: 0 10px 0 #89cdcb; }
+
+        #feedback {
+            font-size: 250px;
+            position: fixed;
+            top: 20%;
+            pointer-events: none;
+            display: none;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .wrong-item {
+            background: #fff0f0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 25px;
+            border-left: 12px solid var(--macaron-red);
+            font-size: 28px;
+            text-align: left;
+        }
+
+        @media (max-width: 600px) {
+            .home-link { width: 50px; height: 50px; top: 10px; left: 10px; }
+            .home-link svg { width: 25px; height: 25px; }
+            .btn-choice { width: 120px; height: 120px; font-size: 60px; }
+            #question { font-size: 30px; padding: 0 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="home-link" title="回首頁">
+        <svg viewBox="0 0 24 24">
+            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
+        </svg>
+    </a>
+
+    <div id="menu" class="card">
+        <h1>🍰「在」與「再」的愛心練習 🍰</h1>
+        <button class="btn" style="background-color: var(--macaron-pink); width: 85%;" onclick="startQuiz('base')">基礎練習</button>
+        <button class="btn" style="background-color: var(--macaron-purple); width: 85%;" onclick="startQuiz('adv')">進階挑戰</button>
+    </div>
+
+    <div id="quiz-container" class="card" style="display:none;">
+        <div id="progress" style="font-weight: bold; color: #ccb; margin-bottom: 5px;"></div>
+        <div class="question-area">
+            <button class="btn-speak" onclick="playCurrentAudio()">
+                <svg viewBox="0 0 24 24"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.07,19.86 21,16.28 21,12C21,7.72 18.07,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16.03C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" /></svg>
+            </button>
+            <div id="question"></div>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 30px;">
+            <button class="btn btn-choice btn-at" onclick="handleChoice('在')">在</button>
+            <button class="btn btn-choice btn-again" onclick="handleChoice('再')">再</button>
+        </div>
+    </div>
+
+    <div id="result-container" class="card" style="display:none;">
+        <h1>🌈 完成練習！</h1>
+        <div id="summary" style="font-size: 24px; margin-bottom: 20px; color: #ff8b94;"></div>
+        <div id="wrong-detail"></div>
+        <button class="btn" style="background-color: var(--macaron-blue); color: #55acb0; width: 85%;" onclick="location.reload()">再練一次</button>
+        <button class="btn" style="background-color: var(--macaron-pink); width: 85%;" onclick="window.location.href='index.html'">回首頁</button>
+    </div>
+
+    <div id="feedback"></div>
+
+    <script>
+        const allData = [
+            { h: "<ruby>我<rt>ㄨㄛˇ</rt></ruby> ( ) <ruby>聽<rt>ㄊㄧㄥ</rt></ruby><ruby>音<rt>ㄧㄣ</rt></ruby><ruby>樂<rt>ㄩㄝˋ</rt></ruby>，<ruby>妹<rt>ㄇㄟˋ</rt></ruby><ruby>妹<rt>ㄇㄟ˙</rt></ruby> ( ) <ruby>唱<rt>ㄔㄤˋ</rt></ruby><ruby>歌<rt>ㄍㄜ</rt></ruby>。", a: "在", level: "base", s: "我在聽音樂，妹妹在唱歌" },
+            { h: "<ruby>你<rt>ㄋㄧˇ</rt></ruby><ruby>能<rt>ㄋㄥˊ</rt></ruby><ruby>這<rt>ㄓㄜˋ</rt></ruby><ruby>麼<rt>ㄇㄜ˙</rt></ruby><ruby>想<rt>ㄒㄧㄤˇ</rt></ruby><ruby>真<rt>ㄓㄣ</rt></ruby><ruby>是<rt>ㄕˋ</rt></ruby> ( ) <ruby>好<rt>ㄏㄠˇ</rt></ruby><ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>過<rt>ㄍㄨㄛˋ</rt></ruby><ruby>了<rt>ㄌㄜ˙</rt></ruby>。", a: "再", level: "adv", s: "你能這麼想，真是再好不過了" },
+            { h: "<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>先<rt>ㄒㄧㄢ</rt></ruby><ruby>把<rt>ㄅㄚˇ</rt></ruby><ruby>功<rt>ㄍㄨㄥ</rt></ruby><ruby>課<rt>ㄎㄜˋ</rt></ruby><ruby>寫<rt>ㄒㄧㄝˇ</rt></ruby><ruby>完<rt>ㄨㄢˊ</rt></ruby>， ( ) <ruby>看<rt>ㄎㄢˋ</rt></ruby><ruby>電<rt>ㄉㄧㄢˋ</rt></ruby><ruby>視<rt>ㄕˋ</rt></ruby>。", a: "再", level: "base", s: "我要先把功課寫完，再看電視" },
+            { h: "<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>喜<rt>ㄒㄧˇ</rt></ruby><ruby>歡<rt>ㄏㄨㄢ</rt></ruby><ruby>一<rt>ㄧˋ</rt></ruby><ruby>個<rt>ㄍㄜ˙</rt></ruby><ruby>人<rt>ㄖㄣˊ</rt></ruby> ( ) <ruby>家<rt>ㄐㄧㄚ</rt></ruby><ruby>裡<rt>ㄌㄧˇ</rt></ruby><ruby>看<rt>ㄎㄢˋ</rt></ruby><ruby>電<rt>ㄉㄧㄢˋ</rt></ruby><ruby>視<rt>ㄕˋ</rt></ruby>。", a: "在", level: "base", s: "我喜歡一個人在家裡看電視" },
+            { h: "<ruby>小<rt>ㄒㄧㄠˇ</rt></ruby><ruby>倫<rt>ㄌㄨㄣˊ</rt></ruby> ( ) <ruby>音<rt>ㄧㄣ</rt></ruby><ruby>樂<rt>ㄩㄝˋ</rt></ruby><ruby>方<rt>ㄈㄤ</rt></ruby><ruby>面<rt>ㄇㄧㄢˋ</rt></ruby><ruby>表<rt>ㄅㄧㄠˇ</rt></ruby><ruby>現<rt>ㄒㄧㄢˋ</rt></ruby><ruby>特<rt>ㄊㄜˋ</rt></ruby><ruby>別<rt>ㄅㄧㄝˊ</rt></ruby><ruby>傑<rt>ㄐㄧㄝˊ</rt></ruby><ruby>出<rt>ㄔㄨ</rt></ruby>。", a: "在", level: "adv", s: "小倫在音樂方面表現特別傑出" },
+            { h: "<ruby>失<rt>ㄕ</rt></ruby><ruby>敗<rt>ㄅㄞˋ</rt></ruby><ruby>了<rt>ㄌㄜ˙</rt></ruby>，<ruby>不<rt>ㄅㄨˊ</rt></ruby><ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>氣<rt>ㄑㄧˋ</rt></ruby><ruby>餒<rt>ㄋㄟˇ</rt></ruby>，<ruby>要<rt>ㄧㄠˋ</rt></ruby> ( ) <ruby>接<rt>ㄐㄧㄝ</rt></ruby> ( ) <ruby>厲<rt>ㄌㄧˋ</rt></ruby>！", a: "再", level: "base", s: "失敗了不要氣餒，要再接再厲" },
+            { h: "<ruby>今<rt>ㄐㄧㄣ</rt></ruby><ruby>年<rt>ㄋㄧㄢˊ</rt></ruby><ruby>春<rt>ㄔㄨㄣ</rt></ruby><ruby>節<rt>ㄐㄧㄝˊ</rt></ruby>，<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>一<rt>ㄧˋ</rt></ruby><ruby>家<rt>ㄐㄧㄚ</rt></ruby><ruby>人<rt>ㄖㄣˊ</rt></ruby><ruby>打<rt>ㄉㄚˇ</rt></ruby><ruby>算<rt>ㄙㄨㄢˋ</rt></ruby> ( ) <ruby>外<rt>ㄨㄞˋ</rt></ruby><ruby>婆<rt>ㄆㄛˊ</rt></ruby><ruby>家<rt>ㄐㄧㄚ</rt></ruby><ruby>度<rt>ㄉㄨˋ</rt></ruby><ruby>過<rt>ㄍㄨˋ</rt></ruby>。", a: "在", level: "base", s: "今年春節我們一家人打算在外婆家度過" },
+            { h: "( ) <ruby>不<rt>ㄅㄨˊ</rt></ruby><ruby>下<rt>ㄒㄧㄚˋ</rt></ruby><ruby>雨<rt>ㄩˇ</rt></ruby>，<ruby>水<rt>ㄕㄨㄟˇ</rt></ruby><ruby>庫<rt>ㄎㄨˋ</rt></ruby><ruby>就<rt>ㄐㄧㄡˋ</rt></ruby><ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>沒<rt>ㄇㄟˊ</rt></ruby><ruby>水<rt>ㄕㄨㄟˇ</rt></ruby><ruby>了<rt>ㄌㄜ˙</rt></ruby>。", a: "再", level: "base", s: "再不下雨，水庫就要沒水了" },
+            { h: "<ruby>小<rt>ㄒㄧㄠˇ</rt></ruby><ruby>康<rt>ㄎㄤ</rt></ruby><ruby>大<rt>ㄉㄚˋ</rt></ruby><ruby>聲<rt>ㄕㄥ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>說<rt>ㄕㄨㄛ</rt></ruby>：「<ruby>沒<rt>ㄇㄟˊ</rt></ruby><ruby>問<rt>ㄨㄣˋ</rt></ruby><ruby>題<rt>ㄊㄧˊ</rt></ruby>！<ruby>包<rt>ㄅㄠ</rt></ruby> ( ) <ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>身<rt>ㄕㄣ</rt></ruby><ruby>上<rt>ㄕㄤˋ</rt></ruby>！」", a: "在", level: "adv", s: "小康大聲地說沒問題包在我身上" },
+            { h: "<ruby>爸<rt>ㄅㄚˋ</rt></ruby><ruby>爸<rt>ㄅㄚ˙</rt></ruby><ruby>坐<rt>ㄗㄨㄛˋ</rt></ruby> ( ) <ruby>椅<rt>ㄧˇ</rt></ruby><ruby>子<rt>ㄗ˙</rt></ruby><ruby>上<rt>ㄕㄤˋ</rt></ruby><ruby>看<rt>ㄎㄢˋ</rt></ruby><ruby>報<rt>ㄅㄠˋ</rt></ruby><ruby>紙<rt>ㄓˇ</rt></ruby>。", a: "在", level: "base", s: "爸爸坐在椅子上看報紙" },
+            { h: "<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>依<rt>ㄧ</rt></ruby><ruby>依<rt>ㄧ</rt></ruby><ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>捨<rt>ㄕㄜˇ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>向<rt>ㄒㄧㄤˋ</rt></ruby><ruby>外<rt>ㄨㄞˋ</rt></ruby><ruby>公<rt>ㄍㄨㄥ</rt></ruby><ruby>說<rt>ㄕㄨㄛ</rt></ruby>：「( ) <ruby>見<rt>ㄐㄧㄢˋ</rt></ruby>！」", a: "再", level: "base", s: "我們依依不捨地向外公說再見" },
+            { h: "<ruby>老<rt>ㄌㄠˇ</rt></ruby><ruby>師<rt>ㄕ</rt></ruby><ruby>傅<rt>ㄈㄨˋ</rt></ruby><ruby>對<rt>ㄉㄨㄟˋ</rt></ruby><ruby>於<rt>ㄩˊ</rt></ruby><ruby>捏<rt>ㄋㄧㄝ</rt></ruby><ruby>麵<rt>ㄇㄧㄢˋ</rt></ruby><ruby>人<rt>ㄖㄣˊ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>工<rt>ㄍㄨㄥ</rt></ruby><ruby>夫<rt>ㄈㄨ</rt></ruby><ruby>很<rt>ㄏㄣˇ</rt></ruby> ( ) <ruby>行<rt>ㄏㄤˊ</rt></ruby>。", a: "在", level: "adv", s: "老師傅對於捏麵人的工夫很在行" },
+            { h: "<ruby>診<rt>ㄓㄣ</rt></ruby><ruby>所<rt>ㄙㄨㄛˇ</rt></ruby><ruby>裡<rt>ㄌㄧˇ</rt></ruby><ruby>掛<rt>ㄍㄨㄚˋ</rt></ruby><ruby>著<rt>ㄓㄜ˙</rt></ruby><ruby>一<rt>ㄧˋ</rt></ruby><ruby>塊<rt>ㄎㄨㄞˋ</rt></ruby>「<ruby>華<rt>ㄏㄨㄚˊ</rt></ruby><ruby>陀<rt>ㄊㄨㄛˊ</rt></ruby> ( ) <ruby>世<rt>ㄕˋ</rt></ruby>」<ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>匾<rt>ㄅㄧㄢˇ</rt></ruby><ruby>額<rt>ㄜˊ</rt></ruby>。", a: "再", level: "adv", s: "診所裡掛著一塊華陀再世的匾額" },
+            { h: "<ruby>這<rt>ㄓㄜˋ</rt></ruby><ruby>單<rt>ㄉㄢ</rt></ruby><ruby>是<rt>ㄕˋ</rt></ruby><ruby>利<rt>ㄌㄧˋ</rt></ruby><ruby>用<rt>ㄩㄥˋ</rt></ruby> ( ) <ruby>生<rt>ㄕㄥ</rt></ruby><ruby>紙<rt>ㄓˇ</rt></ruby><ruby>製<rt>ㄓˋ</rt></ruby><ruby>作<rt>ㄗㄨㄛˋ</rt></ruby><ruby>成<rt>ㄔㄥˊ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>筆<rt>ㄅㄧˇ</rt></ruby><ruby>記<rt>ㄐㄧˋ</rt></ruby><ruby>本<rt>ㄅㄣˇ</rt></ruby>。", a: "再", level: "base", s: "這是利用再生紙製作成的筆記本" },
+            { h: "<ruby>老<rt>ㄌㄠˇ</rt></ruby><ruby>師<rt>ㄕ</rt></ruby><ruby>叮<rt>ㄉㄧㄥ</rt></ruby><ruby>嚀<rt>ㄋㄧㄥˊ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>對<rt>ㄉㄨㄟˋ</rt></ruby><ruby>於<rt>ㄩˊ</rt></ruby><ruby>別<rt>ㄅㄧㄝˊ</rt></ruby><ruby>人<rt>ㄖㄣˊ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>幫<rt>ㄅㄤ</rt></ruby><ruby>助<rt>ㄓㄨˋ</rt></ruby>，<ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>感<rt>ㄍㄢˇ</rt></ruby><ruby>謝<rt>ㄒㄧㄝˋ</rt></ruby> ( ) <ruby>心<rt>ㄒㄧㄣ</rt></ruby>。", a: "在", level: "adv", s: "老師叮嚀我們對於別人的幫助要感謝在心" },
+            { h: "<ruby>媽<rt>ㄇㄚ</rt></ruby><ruby>媽<rt>ㄇㄚ˙</rt></ruby><ruby>一<rt>ㄧ</rt></ruby><ruby>而<rt>ㄦˊ</rt></ruby> ( ) 、 ( ) <ruby>而<rt>ㄦˊ</rt></ruby><ruby>三<rt>ㄙㄢ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>提<rt>ㄊㄧˊ</rt></ruby><ruby>醒<rt>ㄒㄧㄥˇ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby>。", a: "再", level: "adv", s: "媽媽一而再再而三的提醒我" },
+            { h: "<ruby>小<rt>ㄒㄧㄠˇ</rt></ruby><ruby>榮<rt>ㄖㄨㄥˊ</rt></ruby><ruby>對<rt>ㄉㄨㄟˋ</rt></ruby><ruby>這<rt>ㄓㄜˋ</rt></ruby><ruby>件<rt>ㄐㄧㄢˋ</rt></ruby><ruby>事<rt>ㄕˋ</rt></ruby><ruby>顯<rt>ㄒㄧㄢˇ</rt></ruby><ruby>得<rt>ㄉㄜˊ</rt></ruby><ruby>十<rt>ㄕˊ</rt></ruby><ruby>分<rt>ㄈㄣ</rt></ruby> ( ) <ruby>意<rt>ㄧˋ</rt></ruby>。", a: "在", level: "base", s: "小榮對這件事顯得十分在意" },
+            { h: "<ruby>你<rt>ㄋㄧˇ</rt></ruby> ( ) <ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>快<rt>ㄎㄨㄞˋ</rt></ruby><ruby>點<rt>ㄉㄧㄢˇ</rt></ruby><ruby>去<rt>ㄑㄩˋ</rt></ruby><ruby>換<rt>ㄏㄨㄢˋ</rt></ruby><ruby>衣<rt>ㄧ</rt></ruby><ruby>服<rt>ㄈㄨˊ</rt></ruby>，<ruby>就<rt>ㄐㄧㄡˋ</rt></ruby><ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>來<rt>ㄌㄞˊ</rt></ruby><ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>及<rt>ㄐㄧˊ</rt></ruby><ruby>上<rt>ㄕㄤˋ</rt></ruby><ruby>學<rt>ㄒㄩㄝˊ</rt></ruby><ruby>了<rt>ㄌㄜ˙</rt></ruby>！！", a: "再", level: "base", s: "你再不快點去換衣服就要來不及上學了" },
+            { h: "<ruby>花<rt>ㄏㄨㄚ</rt></ruby><ruby>多<rt>ㄉㄨㄛ</rt></ruby><ruby>少<rt>ㄕㄠˇ</rt></ruby><ruby>錢<rt>ㄑㄧㄢˊ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>也<rt>ㄧㄝˇ</rt></ruby> ( ) <ruby>所<rt>ㄙㄨㄛˇ</rt></ruby><ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>惜<rt>ㄒㄧˊ</rt></ruby>！", a: "在", level: "adv", s: "花多少錢我也在所不惜" },
+            { h: "<ruby>老<rt>ㄌㄠˇ</rt></ruby><ruby>師<rt>ㄕ</rt></ruby><ruby>站<rt>ㄓㄢˋ</rt></ruby> ( ) <ruby>講<rt>ㄐㄧㄤˇ</rt></ruby><ruby>臺<rt>ㄊㄞˊ</rt></ruby><ruby>上<rt>ㄕㄤˋ</rt></ruby><ruby>說<rt>ㄕㄨㄛ</rt></ruby>：「<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>再<rt>ㄗㄞˋ</rt></ruby><ruby>來<rt>ㄌㄞˊ</rt></ruby><ruby>一<rt>ㄧˋ</rt></ruby><ruby>次<rt>ㄘˋ</rt></ruby>！」", a: "在", level: "base", s: "老師站在講臺上說我們再來一次" },
+            { h: "<ruby>如<rt>ㄖㄨˊ</rt></ruby><ruby>果<rt>ㄍㄨㄛˇ</rt></ruby><ruby>你<rt>ㄋㄧˇ</rt></ruby> ( ) <ruby>說<rt>ㄕㄨㄛ</rt></ruby><ruby>一<rt>ㄧˋ</rt></ruby><ruby>次<rt>ㄘˋ</rt></ruby><ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>禮<rt>ㄌㄧˇ</rt></ruby><ruby>貌<rt>ㄇㄠˋ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>話<rt>ㄏㄨㄚˋ</rt></ruby>...", a: "再", level: "base", s: "如果你再說一次不禮貌的話" },
+            { h: "<ruby>媽<rt>ㄇㄚ</rt></ruby><ruby>媽<rt>ㄇㄚ˙</rt></ruby><ruby>正<rt>ㄓㄥˋ</rt></ruby> ( ) <ruby>說<rt>ㄕㄨㄛ</rt></ruby><ruby>故<rt>ㄍㄨˋ</rt></ruby><ruby>事<rt>ㄕˋ</rt></ruby><ruby>給<rt>ㄍㄟˇ</rt></ruby><ruby>弟<rt>ㄉㄧˋ</rt></ruby><ruby>弟弟<rt>ㄉㄧˋ</rt></ruby><ruby>聽<rt>ㄊㄧㄥ</rt></ruby>。", a: "在", level: "base", s: "媽媽正在說故事給弟弟聽" },
+            { h: "<ruby>剩<rt>ㄕㄥˋ</rt></ruby><ruby>下<rt>ㄒㄧㄚˋ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>事<rt>ㄕˋ</rt></ruby><ruby>情<rt>ㄑㄧㄥˊ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>下<rt>ㄒㄧㄚˋ</rt></ruby><ruby>次<rt>ㄘˋ</rt></ruby> ( ) <ruby>說<rt>ㄕㄨㄛ</rt></ruby><ruby>吧<rt>ㄅㄚ˙</rt></ruby>！", a: "再", level: "base", s: "剩下的事情我們下次再說吧" },
+            { h: "<ruby>別<rt>ㄅㄧㄝˊ</rt></ruby><ruby>人<rt>ㄖㄣˊ</rt></ruby><ruby>正<rt>ㄓㄥˋ</rt></ruby> ( ) <ruby>講<rt>ㄐㄧˇ</rt></ruby><ruby>電<rt>ㄉㄧㄢˋ</rt></ruby><ruby>話<rt>ㄏㄨㄚˋ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>時<rt>ㄕˊ</rt></ruby><ruby>候<rt>ㄏㄡˋ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>保<rt>ㄅㄠˇ</rt></ruby><ruby>持<rt>ㄔˊ</rt></ruby><ruby>安<rt>ㄢ</rt></ruby><ruby>靜<rt>ㄐㄧㄥˋ</rt></ruby>。", a: "在", level: "base", s: "別人正在講電話的時候我們要保持安靜" },
+            { h: "<ruby>不<rt>ㄅㄨˊ</rt></ruby><ruby>要<rt>ㄧㄠˋ</rt></ruby><ruby>一<rt>ㄧ</rt></ruby><ruby>錯<rt>ㄘㄨㄛˋ</rt></ruby> ( ) <ruby>錯<rt>ㄘㄨㄛˋ</rt></ruby>！", a: "再", level: "base", s: "不要一錯再錯" },
+            { h: "<ruby>下<rt>ㄒㄧㄚˋ</rt></ruby><ruby>雨<rt>ㄩˇ</rt></ruby><ruby>了<rt>ㄌㄜ˙</rt></ruby><ruby>不<rt>ㄅㄨˋ</rt></ruby><ruby>能<rt>ㄋㄥˊ</rt></ruby><ruby>出<rt>ㄔㄨ</rt></ruby><ruby>去<rt>ㄑㄩˋ</rt></ruby>， ( ) <ruby>說<rt>ㄕㄨㄛ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>功<rt>ㄍㄨㄥ</rt></ruby><ruby>課<rt>ㄎㄜˋ</rt></ruby><ruby>也<rt>ㄧㄝˇ</rt></ruby><ruby>還<rt>ㄏㄞˊ</rt></ruby><ruby>沒<rt>ㄇㄟˊ</rt></ruby><ruby>寫<rt>ㄒㄧㄝˇ</rt></ruby><ruby>完<rt>ㄨㄢˊ</rt></ruby>。", a: "再", level: "base", s: "下雨了不能出去，再說我的功課也還沒寫完" },
+            { h: "<ruby>今<rt>ㄐㄧㄣ</rt></ruby><ruby>年<rt>ㄋㄧㄢˊ</rt></ruby><ruby>參<rt>ㄘㄢ</rt></ruby><ruby>加<rt>運<rt>ㄩㄣˋ</rt></ruby><ruby>動<rt>ㄉㄨㄥˋ</rt></ruby><ruby>會<rt>ㄏㄨㄟˋ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>班<rt>ㄅㄢ</rt></ruby><ruby>級<rt>ㄐㄧˊ</rt></ruby>，<ruby>也<rt>ㄧㄝˇ</rt></ruby><ruby>包<rt>ㄅㄠ</rt></ruby><ruby>括<rt>ㄎㄨㄛˋ</rt></ruby><ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby> ( ) <ruby>內<rt>ㄋㄟˋ</rt></ruby>。", a: "在", level: "adv", s: "今年參加運動會的班級也包括我們在內" },
+            { h: "<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>一<rt>ㄧ</rt></ruby> ( ) <ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>叮<rt>ㄉㄧㄥ</rt></ruby><ruby>嚀<rt>ㄋㄧㄥˊ</rt></ruby>，<ruby>他<rt>ㄊㄚ</rt></ruby><ruby>仍<rt>ㄖㄥˊ</rt></ruby><ruby>然<rt>ㄖㄢˊ</rt></ruby><ruby>粗<rt>ㄔㄨ</rt></ruby><ruby>心<rt>ㄒㄧㄣ</rt></ruby><ruby>犯<rt>ㄈㄢˋ</rt></ruby><ruby>錯<rt>ㄘㄨㄛˋ</rt></ruby>。", a: "再", level: "base", s: "我一再地叮嚀他仍然粗心犯錯" },
+            { h: "<ruby>這<rt>ㄓㄜˋ</rt></ruby><ruby>種<rt>ㄓㄨㄥˇ</rt></ruby><ruby>事<rt>ㄕˋ</rt></ruby><ruby>情<rt>ㄑㄧㄥˊ</rt></ruby> ( ) <ruby>所<rt>ㄙㄨㄛˇ</rt></ruby><ruby>難<rt>ㄋㄢˊ</rt></ruby><ruby>免<rt>ㄇㄧˇ</rt></ruby>，<ruby>你<rt>ㄋㄧˇ</rt></ruby><ruby>就<rt>ㄐㄧˋ</rt></ruby><ruby>別<rt>ㄅㄧㄝˊ</rt></ruby><ruby>太<rt>ㄊㄞˋ</rt></ruby> ( ) <ruby>意<rt>ㄧˋ</rt></ruby>了<rt>ㄌㄜ˙</rt></ruby><ruby>吧<rt>ㄅㄚ˙</rt></ruby>！", a: "在", level: "adv", s: "這種事情在所難免你就別太在意了吧" },
+            { h: "( ) <ruby>這<rt>ㄓㄜˋ</rt></ruby><ruby>樣<rt>ㄧㄤˋ</rt></ruby><ruby>下<rt>ㄒㄧㄚˋ</rt></ruby><ruby>去<rt>ㄑㄩˋ</rt></ruby>，<ruby>我<rt>ㄨㄛˇ</rt></ruby><ruby>們<rt>ㄇㄣ˙</rt></ruby><ruby>就<rt>ㄐㄧㄡˋ</rt></ruby><ruby>取<rt>ㄑㄩˇ</rt></ruby><ruby>消<rt>ㄒㄧㄠ</rt></ruby><ruby>這<rt>ㄓㄜˋ</rt></ruby><ruby>次<rt>ㄘˋ</rt></ruby><ruby>的<rt>ㄉㄜ˙</rt></ruby><ruby>郊<rt>ㄐㄧㄠ</rt></ruby><ruby>遊<rt>ㄧㄡˊ</rt></ruby>。", a: "再", level: "base", s: "再這樣下去我們就取消這次的郊遊" }
+        ];
+
+        let quizData = [];
+        let cur = 0;
+        let wrongList = [];
+
+        function startQuiz(lv) {
+            quizData = allData.filter(d => d.level === lv);
+            cur = 0;
+            wrongList = [];
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            show();
+        }
+
+        function show() {
+            const data = quizData[cur];
+            document.getElementById('progress').innerText = `進度：${cur + 1} / ${quizData.length}`;
+            document.getElementById('question').innerHTML = data.h.replace(/\( \)/g, '<span class="blank"></span>');
+        }
+
+        function playCurrentAudio() {
+            const data = quizData[cur];
+            speak(data.s);
+        }
+
+        function handleChoice(val) {
+            const fb = document.getElementById('feedback');
+            const ans = quizData[cur].a;
+            fb.style.display = 'block';
+            if (val === ans) {
+                fb.innerText = '○'; fb.style.color = '#a2d2ff';
+                setTimeout(() => {
+                    fb.style.display = 'none'; cur++;
+                    if (cur < quizData.length) show(); else finish();
+                }, 700);
+            } else {
+                fb.innerText = '×'; fb.style.color = '#ffabab';
+                let correctSentence = quizData[cur].s;
+                if (!wrongList.includes(correctSentence)) wrongList.push(correctSentence);
+                setTimeout(() => fb.style.display = 'none', 700);
+            }
+        }
+
+        function finish() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            const sum = document.getElementById('summary');
+            if (wrongList.length === 0) sum.innerHTML = "🎉 太棒了！全對喔！100分！！！";
+            else {
+                sum.innerText = "完成囉！複習一下答錯的題目：";
+                document.getElementById('wrong-detail').innerHTML = wrongList.map(t => `<div class="wrong-item">${t}</div>`).join('');
+            }
+        }
+
+        function speak(t) {
+            window.speechSynthesis.cancel();
+            const m = new SpeechSynthesisUtterance(t); m.lang = 'zh-TW'; m.rate = 0.85;
+            window.speechSynthesis.speak(m);
+        }
+    </script>
+</body>
+</html>

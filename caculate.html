@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>心算小達人 - 18以內加減法</title>
+    <style>
+        :root {
+            --primary-color: #ff9f43;
+            --secondary-color: #54a0ff;
+            --success-color: #1dd1a1;
+            --danger-color: #ff6b6b;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* --- 頂部控制按鈕 --- */
+        .top-nav {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            z-index: 100;
+        }
+
+        .btn-group-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .circle-btn {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border: 3px solid var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #d4eaf3;
+            transition: all 0.1s ease;
+        }
+
+        .circle-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #d4eaf3;
+        }
+
+        .circle-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: var(--secondary-color);
+        }
+
+        .btn-reset { border-color: var(--danger-color); box-shadow: 0 4px 0 #ffdbdb; }
+        .btn-reset svg { fill: var(--danger-color); }
+
+        /* --- 設定選單 --- */
+        #settings-menu {
+            display: none;
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 15px;
+            width: 220px;
+            z-index: 200;
+            text-align: left;
+        }
+        .setting-item { margin-bottom: 12px; font-size: 16px; }
+
+        /* --- 畫面卡片樣式 --- */
+        #setup-screen, #game-screen, #result-screen {
+            background: white;
+            padding: 30px;
+            border-radius: 40px;
+            box-shadow: 0 15px 0 #f0e6d2;
+            text-align: center;
+            width: 95%;
+            max-width: 450px;
+            margin-top: 10px;
+            border: 5px solid white;
+        }
+
+        h1 { color: var(--primary-color); margin-bottom: 10px; }
+        .setting-row { margin: 20px 0; font-size: 20px; }
+        select, input[type="number"] {
+            font-size: 18px;
+            padding: 5px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        #game-screen { display: none; }
+        #timer-container {
+            width: 100%;
+            height: 15px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none; /* 預設隱藏，由程式控制顯示 */
+        }
+        #timer-bar {
+            width: 100%;
+            height: 100%;
+            background: var(--danger-color);
+        }
+
+        #question-display {
+            font-size: 64px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+            min-height: 80px;
+        }
+
+        #user-input {
+            font-size: 48px;
+            background: #f8f9fa;
+            margin: 10px auto 25px;
+            padding: 10px;
+            min-height: 60px;
+            border-radius: 15px;
+            color: var(--secondary-color);
+            border-bottom: 5px solid #ddd;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .btn {
+            padding: 18px;
+            font-size: 28px;
+            border: none;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 6px 0 #eee;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #eee; }
+        .btn-op { background: var(--secondary-color); color: white; box-shadow: 0 6px 0 #2e86de; }
+        .btn-start { background: var(--primary-color); color: white; font-size: 24px; padding: 18px; width: 100%; border-radius: 50px; margin-top: 15px; box-shadow: 0 6px 0 #e67e22; }
+        .btn-clear { background: var(--danger-color); color: white; box-shadow: 0 6px 0 #ee5253; }
+
+        #result-screen { display: none; }
+        .review-list {
+            text-align: left;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 2px solid #eee;
+            padding-top: 10px;
+        }
+        .review-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 22px;
+        }
+        .correct { color: var(--success-color); }
+        .wrong { color: var(--danger-color); }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <button class="circle-btn" onclick="confirmAction('index.html')" title="回首頁">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
+
+        <div class="btn-group-right">
+            <button class="circle-btn btn-reset" onclick="confirmAction('reset')" title="重新開始">
+                <svg viewBox="0 0 24 24"><path d="M17.65,6.35C16.2,4.9,14.21,4,12,4c-4.42,0-7.99,3.58-7.99,8s3.57,8,7.99,8c3.73,0,6.84-2.55,7.73-6h-2.08 c-0.82,2.33-3.04,4-5.65,4c-3.31,0-6-2.69-6-6s2.69-6,6-6c1.66,0,3.14,0.69,4.22,1.78L13,11h7V4L17.65,6.35z"/></svg>
+            </button>
+            <button class="circle-btn" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.68,4.81,12c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="settings-menu">
+        <div class="setting-item">
+            <label><input type="checkbox" id="enable-timer" checked> 啟用倒數計時</label>
+        </div>
+        <div class="setting-item">
+            <label>測驗秒數：</label>
+            <input type="number" id="set-seconds" value="10" min="1" style="width: 50px;"> 秒
+        </div>
+    </div>
+
+    <div id="setup-screen">
+        <h1>心算練習</h1>
+        <div class="setting-row">
+            模式：
+            <select id="game-mode">
+                <option value="mixed">混合加減法</option>
+                <option value="plus">單純加法 (+)</option>
+                <option value="minus">單純減法 (-)</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            題數：<input type="number" id="total-questions" value="10" min="1" max="72"> 題
+        </div>
+        <button class="btn btn-start" onclick="initGame()">開始挑戰</button>
+    </div>
+
+    <div id="game-screen">
+        <div id="progress">第 1 題 / 共 10 題</div>
+        <div id="timer-container"><div id="timer-bar"></div></div>
+        <div id="question-display">--</div>
+        <div id="user-input"></div>
+        <div class="numpad">
+            <button class="btn" onclick="press(1)">1</button>
+            <button class="btn" onclick="press(2)">2</button>
+            <button class="btn" onclick="press(3)">3</button>
+            <button class="btn" onclick="press(4)">4</button>
+            <button class="btn" onclick="press(5)">5</button>
+            <button class="btn" onclick="press(6)">6</button>
+            <button class="btn" onclick="press(7)">7</button>
+            <button class="btn" onclick="press(8)">8</button>
+            <button class="btn" onclick="press(9)">9</button>
+            <button class="btn btn-clear" onclick="press('C')">C</button>
+            <button class="btn" onclick="press(0)">0</button>
+            <button class="btn btn-op" onclick="checkAnswer()">OK</button>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h1>測驗結果</h1>
+        <div id="final-stats" style="font-size: 26px; margin: 10px 0; font-weight: bold;"></div>
+        <div class="review-list" id="review-list"></div>
+        <button class="btn btn-start" onclick="location.reload()">再測一次</button>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentIndex = 0;
+        let correctCount = 0;
+        let timer;
+        let timeLeft = 10;
+        let maxTime = 10;
+        let currentInput = "";
+        let history = [];
+        let isGameRunning = false;
+
+        function toggleMenu() {
+            const menu = document.getElementById('settings-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function confirmAction(type) {
+            const msg = "確定要放棄目前的進度重來嗎？";
+            if (isGameRunning) {
+                if (confirm(msg)) executeAction(type);
+            } else {
+                executeAction(type);
+            }
+        }
+
+        function executeAction(type) {
+            clearInterval(timer);
+            if (type === 'index.html') window.location.href = type;
+            else location.reload();
+        }
+
+        function generatePool(mode) {
+            let pool = [];
+
+            // 加法題庫
+            if (mode === 'mixed' || mode === 'plus') {
+                for (let a = 2; a <= 9; a++) {
+                    for (let b = 2; b <= 9; b++) {
+                        let sum = a + b;
+                        if (sum >= 11 && sum <= 18) pool.push({ q: `${a} + ${b}`, a: sum });
+                    }
+                }
+            }
+
+            // 減法題庫
+            if (mode === 'mixed' || mode === 'minus') {
+                for (let total = 11; total <= 18; total++) {
+                    let unitDigit = total % 10;
+                    for (let b = 1; b <= 9; b++) {
+                        if (unitDigit < b) pool.push({ q: `${total} - ${b}`, a: total - b });
+                    }
+                }
+            }
+
+            // 洗牌
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            return pool;
+        }
+
+        function initGame() {
+            const mode = document.getElementById('game-mode').value;
+            let num = parseInt(document.getElementById('total-questions').value) || 10;
+            maxTime = parseFloat(document.getElementById('set-seconds').value) || 10;
+            const useTimer = document.getElementById('enable-timer').checked;
+
+            let fullPool = generatePool(mode);
+            questions = fullPool.slice(0, Math.min(num, fullPool.length));
+
+            history = [];
+            currentIndex = 0;
+            correctCount = 0;
+            isGameRunning = true;
+
+            // 控制倒數條顯示
+            document.getElementById('timer-container').style.display = useTimer ? 'block' : 'none';
+
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentIndex >= questions.length) {
+                endGame();
+                return;
+            }
+            currentInput = "";
+            document.getElementById('user-input').innerText = "";
+            document.getElementById('progress').innerText = `第 ${currentIndex + 1} 題 / 共 ${questions.length} 題`;
+            document.getElementById('question-display').innerText = questions[currentIndex].q;
+
+            if (document.getElementById('enable-timer').checked) {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = maxTime;
+            updateBar();
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                updateBar();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswer(true);
+                }
+            }, 100);
+        }
+
+        function updateBar() {
+            document.getElementById('timer-bar').style.width = (timeLeft / maxTime) * 100 + "%";
+        }
+
+        function press(val) {
+            if (val === 'C') {
+                currentInput = "";
+            } else {
+                if (currentInput.length < 2) currentInput += val;
+            }
+            document.getElementById('user-input').innerText = currentInput;
+        }
+
+        function checkAnswer(isTimeout = false) {
+            clearInterval(timer);
+            const correctAns = questions[currentIndex].a;
+            const userAns = isTimeout ? "時間到" : (currentInput === "" ? "?" : parseInt(currentInput));
+            const isCorrect = !isTimeout && userAns === correctAns;
+
+            if (isCorrect) correctCount++;
+
+            history.push({
+                q: questions[currentIndex].q,
+                ans: correctAns,
+                user: userAns,
+                isCorrect: isCorrect
+            });
+
+            const display = document.getElementById('question-display');
+            display.innerText = questions[currentIndex].q + " = " + correctAns;
+            display.style.color = isCorrect ? 'var(--success-color)' : 'var(--danger-color)';
+
+            setTimeout(() => {
+                display.style.color = '#333';
+                currentIndex++;
+                showQuestion();
+            }, 800);
+        }
+
+        function endGame() {
+            isGameRunning = false;
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            const ratio = Math.round((correctCount / questions.length) * 100);
+            document.getElementById('final-stats').innerHTML = `得分：<span style="color:var(--primary-color)">${correctCount}</span> / ${questions.length} ( ${ratio}% )`;
+
+            const listHtml = history.map((item, index) => `
+                <div class="review-item">
+                    <span>${index + 1}. ${item.q} = <b>${item.ans}</b></span>
+                    <span class="${item.isCorrect ? 'correct' : 'wrong'}">
+                        ${item.isCorrect ? '✅' : '❌ (' + item.user + ')'}
+                    </span>
+                </div>
+            `).join('');
+            document.getElementById('review-list').innerHTML = listHtml;
+        }
+    </script>
+</body>
+</html>
