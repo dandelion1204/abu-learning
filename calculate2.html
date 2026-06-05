@@ -293,7 +293,7 @@
             color: #444;
         }
 
-        .btn-exchange, .btn-reset {
+        .btn-exchange, .btn-combine, .btn-reset {
             color: white;
             border: none;
             border-radius: 4px;
@@ -305,6 +305,9 @@
         }
         .btn-exchange { background-color: #2ec4b6; }
         .btn-exchange:hover { background-color: #20a396; }
+
+        .btn-combine { background-color: #896bff; }
+        .btn-combine:hover { background-color: #8352ee; }
 
         .btn-reset { background-color: #94a3b8; }
         .btn-reset:hover { background-color: #64748b; }
@@ -349,7 +352,19 @@
         }
 
         .coin-10 { width: 45px; height: 45px; background-color: #eccc68; border: 2px solid #bfa030; font-size: 1.1rem; color: #574b14; }
-        .coin-1  { width: 38px; height: 38px; background-color: #70a1ff; border: 2px solid #1e90ff; font-size: 0.9rem; }
+        .coin-1  { width: 38px; height: 38px; background-color: #70a1ff; border: 2px solid #1e90ff; font-size: 0.9rem; cursor: pointer; transition: background-color 0.1s; }
+
+        /* 新湊出來的 10 元硬幣樣式：綠色文字與綠色邊框 */
+        .coin-10.coin-generated-10 {
+            color: #10ac84;
+            border-color: #10ac84;
+        }
+
+        /* 被點選變紅色的硬幣樣式 */
+        .coin-1.coin-selected {
+            background-color: var(--danger-color);
+            border-color: #b51224;
+        }
 
     </style>
 </head>
@@ -411,6 +426,7 @@
             <div class="helper-header-block">
                 <div class="helper-section-title" id="upper-title">上半部</div>
                 <button class="btn-exchange" id="exchange-btn" onclick="exchangeTenToOnes()">換 10 個 1</button>
+                <button class="btn-combine" id="combine-btn" onclick="combineOnesToTen()">湊 10</button>
             </div>
             <div class="coin-container" id="upper-coin-box"></div>
         </div>
@@ -437,6 +453,13 @@
     let currentHelper1s = 0;
     let lowerHelper10s = 0;
     let lowerHelper1s = 0;
+
+    // 加法模式下專用：追蹤加數（下半部）剩餘的靜態 10元與 1元數量
+    let staticLower10s = 0;
+    let staticLower1s = 0;
+
+    // 追蹤新湊出來的 10 元硬幣數量
+    let generated10sCount = 0;
 
     // 初始化遊戲或嘗試從 Local Storage 讀取舊進度
     function initGame() {
@@ -612,7 +635,7 @@
 
         const lowerBox = document.getElementById('lower-coin-box');
         const exchangeBtn = document.getElementById('exchange-btn');
-        const resetBtn = document.getElementById('reset-btn');
+        const combineBtn = document.getElementById('combine-btn');
 
         document.getElementById('helper-main-title').innerText = `硬幣數數看 (${num1} ${op} ${num2} = ?)`;
 
@@ -621,20 +644,27 @@
         lowerHelper10s = 0;
         lowerHelper1s = 0;
 
+        // 重置新生成的 10 元計數器
+        generated10sCount = 0;
+
+        // 初始化加法模式下半部的靜態硬幣追蹤值
+        staticLower10s = Math.floor(num2 / 10);
+        staticLower1s = num2 % 10;
+
         lowerBox.classList.remove('coin-container-subtraction-lower');
         lowerBox.innerHTML = ''; // 徹底清空下框容器
 
         if (isAddition) {
             exchangeBtn.style.display = 'none';
-            resetBtn.style.display = 'none';
+            combineBtn.style.display = 'inline-block'; // 顯示湊10按鈕
             document.getElementById('upper-title').innerText = `被加數：${num1}`;
             document.getElementById('lower-title').innerText = `加數：${num2}`;
 
             refreshCoinDisplay(false);
-            renderStaticCoins(lowerBox, num2); // 清空後重新渲染正確的靜態硬幣
+            renderStaticCoins(lowerBox); // 清空後重新渲染正確的靜態硬幣
         } else {
             exchangeBtn.style.display = 'inline-block';
-            resetBtn.style.display = 'inline-block';
+            combineBtn.style.display = 'none'; // 隱藏湊10按鈕
             document.getElementById('upper-title').innerText = `被減數：${num1}`;
             document.getElementById('lower-title').innerText = `減數（要拿走：${num2}）`;
             lowerBox.classList.add('coin-container-subtraction-lower');
@@ -653,16 +683,54 @@
         }
     }
 
+    // 湊10功能邏輯
+    function combineOnesToTen() {
+        const upperSelected = document.querySelectorAll('#upper-coin-box .coin-selected');
+        const lowerSelected = document.querySelectorAll('#lower-coin-box .coin-selected');
+        const totalSelectedCount = upperSelected.length + lowerSelected.length;
+
+        if (totalSelectedCount === 10) {
+            // 剛好10個，扣除對應容器內的 1 元數量
+            currentHelper1s -= upperSelected.length;
+            staticLower1s -= lowerSelected.length;
+
+            // 新生成的 10 元數量加 1
+            generated10sCount += 1;
+
+            // 狀態變數的總體 10 元也同步加 1
+            currentHelper10s += 1;
+
+            // 重新渲染上半部與下半部畫面
+            refreshCoinDisplay(false);
+            renderStaticCoins(document.getElementById('lower-coin-box'));
+        } else {
+            alert(`圈選有誤！必須剛好選 10 個紅硬幣才能湊成 10 元。(目前選了 ${totalSelectedCount} 個)`);
+        }
+    }
+
+    // 全方位重置按鈕邏輯：支援加法與減法模式
     function resetHelperCoins() {
         const currentQuestion = questions[currentQuestionIndex];
         const num1 = currentQuestion.num1;
+        const num2 = currentQuestion.num2;
+        const isAddition = (currentQuestion.operator === '+');
 
         currentHelper10s = Math.floor(num1 / 10);
         currentHelper1s = num1 % 10;
         lowerHelper10s = 0;
         lowerHelper1s = 0;
+        generated10sCount = 0; // 清除新湊出來的 10 元
 
-        refreshCoinDisplay(true);
+        if (isAddition) {
+            // 加法模式下重置下半部的加數
+            staticLower10s = Math.floor(num2 / 10);
+            staticLower1s = num2 % 10;
+            refreshCoinDisplay(false);
+            renderStaticCoins(document.getElementById('lower-coin-box'));
+        } else {
+            // 減法模式下重置
+            refreshCoinDisplay(true);
+        }
     }
 
     function moveCoinToLower(value) {
@@ -676,6 +744,11 @@
         refreshCoinDisplay(true);
     }
 
+    // 切換 1 元硬幣變紅色的函式
+    function toggleCoinColor(event) {
+        event.currentTarget.classList.toggle('coin-selected');
+    }
+
     function refreshCoinDisplay(isSubtractionMode) {
         const upperBox = document.getElementById('upper-coin-box');
         const lowerBox = document.getElementById('lower-coin-box');
@@ -684,7 +757,10 @@
         upperBox.innerHTML = '';
         if (isSubtractionMode) lowerBox.innerHTML = '';
 
-        for (let i = 0; i < currentHelper10s; i++) {
+        // 1. 渲染原本題目自帶的 10 元硬幣 (普通樣式)
+        // BUG 修正：不論是否為減法模式，常規 10 元的渲染數量都應直接根據原本未進位的 regular10s 數量計算。
+        const regular10sCount = isSubtractionMode ? currentHelper10s : (currentHelper10s - generated10sCount);
+        for (let i = 0; i < regular10sCount; i++) {
             const coin = document.createElement('div');
             coin.classList.add('coin', 'coin-10');
             if (isSubtractionMode) {
@@ -694,12 +770,26 @@
             coin.innerText = '10';
             upperBox.appendChild(coin);
         }
+
+        // 2. 渲染新湊出來的 10 元硬幣 (綠色文字與邊框樣式)
+        if (!isSubtractionMode) {
+            for (let i = 0; i < generated10sCount; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin', 'coin-10', 'coin-generated-10');
+                coin.innerText = '10';
+                upperBox.appendChild(coin);
+            }
+        }
+
+        // 3. 渲染 1 元硬幣
         for (let i = 0; i < currentHelper1s; i++) {
             const coin = document.createElement('div');
             coin.classList.add('coin', 'coin-1');
             if (isSubtractionMode) {
                 coin.classList.add('coin-clickable');
                 coin.onclick = () => moveCoinToLower(1);
+            } else {
+                coin.onclick = toggleCoinColor;
             }
             coin.innerText = '1';
             upperBox.appendChild(coin);
@@ -715,6 +805,7 @@
             for (let i = 0; i < lowerHelper1s; i++) {
                 const coin = document.createElement('div');
                 coin.classList.add('coin', 'coin-1');
+                coin.onclick = toggleCoinColor;
                 coin.innerText = '1';
                 lowerBox.appendChild(coin);
             }
@@ -729,20 +820,19 @@
         }
     }
 
-    function renderStaticCoins(container, number) {
+    function renderStaticCoins(container) {
         container.innerHTML = '';
-        const count10 = Math.floor(number / 10);
-        const count1 = number % 10;
 
-        for (let i = 0; i < count10; i++) {
+        for (let i = 0; i < staticLower10s; i++) {
             const coin = document.createElement('div');
             coin.classList.add('coin', 'coin-10');
             coin.innerText = '10';
             container.appendChild(coin);
         }
-        for (let i = 0; i < count1; i++) {
+        for (let i = 0; i < staticLower1s; i++) {
             const coin = document.createElement('div');
             coin.classList.add('coin', 'coin-1');
+            coin.onclick = toggleCoinColor;
             coin.innerText = '1';
             container.appendChild(coin);
         }
@@ -758,7 +848,6 @@
         }
     }
 
-    // 網頁載入改為執行 initGame 檢查狀態
     window.onload = initGame;
 </script>
 
