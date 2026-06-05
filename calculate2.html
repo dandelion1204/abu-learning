@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二位數加減法練習（Bug修正版）</title>
+    <title>二位數加減法練習（Local storage）</title>
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -49,10 +49,32 @@
             min-height: 30px;
         }
 
+        .progress-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         #progress-text {
             color: #666;
             font-size: 1rem;
             font-weight: 500;
+        }
+
+        .btn-reset-game {
+            background-color: #dae0e8;
+            color: rgb(106, 100, 100);
+            border: none;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-reset-game:hover {
+            background-color: #b1bcca;
         }
 
         .btn-helper {
@@ -335,10 +357,13 @@
 
 <div class="container">
     <div id="quiz-screen">
-        <h2>數學小達人</h2>
+        <h2>二位數加減法</h2>
 
         <div class="quiz-header">
-            <span id="progress-text">第 1 / 10 題</span>
+            <div class="progress-wrapper">
+                <span id="progress-text">第 1 / 10 題</span>
+                <button class="btn-reset-game" onclick="resetToFirstQuestion()">重設</button>
+            </div>
             <button class="btn-helper" onclick="openHelper()">硬幣小幫手</button>
         </div>
 
@@ -413,16 +438,63 @@
     let lowerHelper10s = 0;
     let lowerHelper1s = 0;
 
+    // 初始化遊戲或嘗試從 Local Storage 讀取舊進度
+    function initGame() {
+        const savedQuestions = localStorage.getItem('quiz_questions');
+        const savedIndex = localStorage.getItem('quiz_currentQuestionIndex');
+        const savedAnswers = localStorage.getItem('quiz_userAnswers');
+        const savedScore = localStorage.getItem('quiz_score');
+
+        // 檢查是否有儲存的進度，且進度還沒答完
+        if (savedQuestions && savedIndex !== null && parseInt(savedIndex, 10) < TOTAL_QUESTIONS) {
+            questions = JSON.parse(savedQuestions);
+            currentQuestionIndex = parseInt(savedIndex, 10);
+            userAnswers = savedAnswers ? JSON.parse(savedAnswers) : [];
+            score = savedScore ? parseInt(savedScore, 10) : 0;
+
+            document.getElementById('quiz-screen').style.display = 'block';
+            document.getElementById('result-screen').style.display = 'none';
+            showQuestion();
+        } else {
+            // 沒有進度或已經做完了，就開新局
+            startNewGame();
+        }
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem('quiz_questions', JSON.stringify(questions));
+        localStorage.setItem('quiz_currentQuestionIndex', currentQuestionIndex);
+        localStorage.setItem('quiz_userAnswers', JSON.stringify(userAnswers));
+        localStorage.setItem('quiz_score', score);
+    }
+
+    function clearLocalStorage() {
+        localStorage.removeItem('quiz_questions');
+        localStorage.removeItem('quiz_currentQuestionIndex');
+        localStorage.removeItem('quiz_userAnswers');
+        localStorage.removeItem('quiz_score');
+    }
+
     function startNewGame() {
         questions = generateBalancedQuestions();
         currentQuestionIndex = 0;
         userAnswers = [];
         score = 0;
 
+        saveToLocalStorage(); // 儲存初始新局
+
         document.getElementById('quiz-screen').style.display = 'block';
         document.getElementById('result-screen').style.display = 'none';
 
         showQuestion();
+    }
+
+    // 按下重設按鈕：清除進度並重頭開始
+    function resetToFirstQuestion() {
+        if (confirm('確定要清除目前的進度，重新從第一題開始嗎？')) {
+            clearLocalStorage();
+            startNewGame();
+        }
     }
 
     function generateBalancedQuestions() {
@@ -485,6 +557,10 @@
         });
 
         currentQuestionIndex++;
+
+        // 每次進度變更都儲存到 LocalStorage
+        saveToLocalStorage();
+
         if (currentQuestionIndex < TOTAL_QUESTIONS) {
             showQuestion();
         } else {
@@ -493,6 +569,9 @@
     }
 
     function showResult() {
+        // 測驗結束，可以把暫存清掉，避免下次進來直接卡在結果頁
+        clearLocalStorage();
+
         document.getElementById('quiz-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
         document.getElementById('final-score').innerText = score;
@@ -557,7 +636,7 @@
             exchangeBtn.style.display = 'inline-block';
             resetBtn.style.display = 'inline-block';
             document.getElementById('upper-title').innerText = `被減數：${num1}`;
-            document.getElementById('lower-title').innerText = `減數框（要拿走：${num2}）`;
+            document.getElementById('lower-title').innerText = `減數（要拿走：${num2}）`;
             lowerBox.classList.add('coin-container-subtraction-lower');
 
             refreshCoinDisplay(true);
@@ -650,9 +729,8 @@
         }
     }
 
-    // 修正：確保此方法乾淨，完全不受全域 lowerHelper 變數影響
     function renderStaticCoins(container, number) {
-        container.innerHTML = ''; // 再做一次保險清空
+        container.innerHTML = '';
         const count10 = Math.floor(number / 10);
         const count1 = number % 10;
 
@@ -680,7 +758,8 @@
         }
     }
 
-    window.onload = startNewGame;
+    // 網頁載入改為執行 initGame 檢查狀態
+    window.onload = initGame;
 </script>
 
 </body>
