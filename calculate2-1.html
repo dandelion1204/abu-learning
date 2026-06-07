@@ -2,7 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Viewport 基本宣告 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>二位數加減法練習（Local storage）</title>
     <style>
         :root {
@@ -10,6 +11,19 @@
             --success-color: #2ec4b6;
             --danger-color: #e71d36;
             --neutral-color: #f4f6f9;
+        }
+
+        /* 核心修正 1：直接從網頁最頂層封鎖瀏覽器的所有預設縮放手勢 */
+        html, body {
+            -webkit-text-size-adjust: 100%;
+            touch-action: none !important; /* 徹底封鎖全網頁的雙擊放大與雙指縮放 */
+            overflow: hidden; /* 防止網頁因縮放產生怪異滾動條 */
+            height: 100%;
+            width: 100%;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         body {
@@ -21,7 +35,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            box-sizing: border-box;
         }
 
         .container {
@@ -31,7 +44,6 @@
             padding: 24px;
             width: 100%;
             max-width: 450px;
-            box-sizing: border-box;
         }
 
         h2 {
@@ -194,6 +206,8 @@
             border-radius: 12px;
             padding: 10px;
             margin-bottom: 20px;
+            /* 核心修正 2：因為全域禁用了 touch-action，這裡必須單獨允許上下滾動，否則錯題清單會無法滑動 */
+            touch-action: pan-y !important;
         }
 
         .review-item {
@@ -277,49 +291,6 @@
         /* 硬幣內嵌區域樣式 */
         .coin-helper-panel {
             margin-top: 15px;
-        }
-
-        /* 改進後的標準注音標題樣式 */
-        .helper-main-title {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;               /* 漢字與漢字之間的間距 */
-            margin: 10px 0 15px 0;
-        }
-
-        .ruby-block {
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .char {
-            font-size: 1.35rem;
-            font-weight: bold;
-            color: #444;
-            line-height: 1;
-        }
-
-        .bopo-container {
-            display: inline-flex;
-            align-items: center;     /* 關鍵：讓右側聲調與左側注音垂直居中對齊 */
-            margin-left: 2px;        /* 漢字與注音的間距 */
-        }
-
-        .bopo-text {
-            font-size: 0.65rem;
-            color: #777;
-            writing-mode: vertical-rl; /* 讓注音符號由上往下排 */
-            text-orientation: upright;
-            line-height: 1.1;
-            letter-spacing: -1px;    /* 讓注音符號結構更緊湊 */
-        }
-
-        .bopo-tone {
-            font-size: 0.55rem;
-            color: #777;
-            line-height: 1;
-            margin-left: 1px;        /* 注音與聲調的微小間距 */
         }
 
         .helper-header-block {
@@ -430,50 +401,12 @@
 
         <!-- 硬幣小幫手直接內嵌在主畫面上 -->
         <div class="coin-helper-panel">
-            <!-- 修正後的標準直式注音標題區區塊 -->
-            <div class="helper-main-title">
-                <div class="ruby-block">
-                    <span class="char">硬</span>
-                    <div class="bopo-container">
-                        <span class="bopo-text">ㄧㄥ</span>
-                        <span class="bopo-tone">ˋ</span>
-                    </div>
-                </div>
-                <div class="ruby-block">
-                    <span class="char">幣</span>
-                    <div class="bopo-container">
-                        <span class="bopo-text">ㄅㄧ</span>
-                        <span class="bopo-tone">ˋ</span>
-                    </div>
-                </div>
-                <div class="ruby-block">
-                    <span class="char">小</span>
-                    <div class="bopo-container">
-                        <span class="bopo-text">ㄒㄧㄠ</span>
-                        <span class="bopo-tone">ˇ</span>
-                    </div>
-                </div>
-                <div class="ruby-block">
-                    <span class="char">幫</span>
-                    <div class="bopo-container">
-                        <span class="bopo-text">ㄅㄤ</span>
-                        <!-- 第一聲不需標注聲調 -->
-                    </div>
-                </div>
-                <div class="ruby-block">
-                    <span class="char">手</span>
-                    <div class="bopo-container">
-                        <span class="bopo-text">ㄕㄡ</span>
-                        <span class="bopo-tone">ˇ</span>
-                    </div>
-                </div>
-            </div>
 
             <div>
                 <div class="helper-header-block">
                     <div class="helper-section-title" id="upper-title">上半部</div>
-                    <button class="btn-exchange" id="exchange-btn" onclick="exchangeTenToOnes()">換 10 個 1</button>
-                    <button class="btn-combine" id="combine-btn" onclick="combineOnesToTen()">湊10</button>
+                    <button class="btn-exchange" id="exchange-btn" onclick="exchangeTenToOnes()">1個10 ➜ 10個1</button>
+                    <button class="btn-combine" id="combine-btn" onclick="combineOnesToTen()">10個1 ➜ 1個10</button>
                 </div>
                 <div class="coin-container" id="upper-coin-box"></div>
             </div>
@@ -535,6 +468,36 @@
 </div>
 
 <script>
+    /* 核心修正 3：多維度 JS 攔截層，徹底解決 Chrome 忽略 user-scalable=no 的問題 */
+
+    // ① 攔截手機版 Chrome / 觸控螢幕的任何多指觸控與捏合（Pinch）行為
+    document.addEventListener('touchstart', function (event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false, capture: true });
+
+    document.addEventListener('touchmove', function (event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false, capture: true });
+
+    // ② 攔截桌機版 Chrome 的「Ctrl + 滾輪」以及「筆電觸控板雙指捏合」產生的縮放
+    document.addEventListener('wheel', function (event) {
+        if (event.ctrlKey) {
+            event.preventDefault();
+        }
+    }, { passive: false, capture: true });
+
+    // ③ 攔截桌機版 Chrome 的瀏覽器快捷鍵縮放（Ctrl 加、Ctrl 減、Ctrl 零）
+    document.addEventListener('keydown', function (event) {
+        if (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '=' || event.key === '0')) {
+            event.preventDefault();
+        }
+    }, { capture: true });
+
+
     const TOTAL_QUESTIONS = 10;
     let questions = [];
     let currentQuestionIndex = 0;
@@ -611,10 +574,10 @@
 
         for (let a = 10; a <= 99; a++) {
             for (let b = 10; b <= 99; b++) {
-                if (a + b >= 0 && a + b <= 99) {
+                if (a + b >= 10 && a + b <= 99) {
                     additionPool.push({ num1: a, operator: '+', num2: b, answer: a + b });
                 }
-                if (a - b >= 0 && a - b <= 99) {
+                if (a - b >= 10 && a - b <= 99) {
                     subtractionPool.push({ num1: a, operator: '-', num2: b, answer: a - b });
                 }
             }
@@ -629,23 +592,18 @@
 
     function showQuestion() {
         const currentQuestion = questions[currentQuestionIndex];
-        // 更新主畫面
         document.getElementById('progress-text').innerText = `第 ${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS} 題`;
         document.getElementById('equation-text').innerText = `${currentQuestion.num1} ${currentQuestion.operator} ${currentQuestion.num2} =`;
         document.getElementById('current-answer').innerText = '';
 
-        // 一換題就自動初始化並重繪硬幣盤面
         autoInitCoinHelper();
     }
 
     /* --- 鍵盤子頁面視窗控制邏輯 --- */
     function openKeyboardModal() {
         const currentQuestion = questions[currentQuestionIndex];
-        // 帶入子頁面的題目
         document.getElementById('modal-equation-text').innerText = `${currentQuestion.num1} ${currentQuestion.operator} ${currentQuestion.num2} =`;
-        // 把主畫面的文字同步到子頁面的輸入框中
         document.getElementById('modal-current-answer').innerText = document.getElementById('current-answer').innerText;
-        // 顯示彈窗
         document.getElementById('keyboard-modal').style.display = 'flex';
     }
 
@@ -659,14 +617,14 @@
         }
     }
 
-    /* --- 數字鍵盤輸入邏輯（同步更改子頁面與主畫面的框） --- */
+    /* --- 數字鍵盤輸入邏輯 --- */
     function pressNum(num) {
         const modalDisplay = document.getElementById('modal-current-answer');
         const mainDisplay = document.getElementById('current-answer');
 
         if (modalDisplay.innerText.length < 2) {
             modalDisplay.innerText += num;
-            mainDisplay.innerText = modalDisplay.innerText; // 同步回主畫面
+            mainDisplay.innerText = modalDisplay.innerText;
         }
     }
 
@@ -697,7 +655,6 @@
         currentQuestionIndex++;
         saveToLocalStorage();
 
-        // 答題完成，關閉子頁面鍵盤
         closeKeyboardModal();
 
         if (currentQuestionIndex < TOTAL_QUESTIONS) {
@@ -805,7 +762,7 @@
             refreshCoinDisplay(false);
             renderStaticCoins(document.getElementById('lower-coin-box'));
         } else {
-            alert(`圈選有誤！必須剛好選 10 個紅硬幣才能湊成 10 元。(目前選了 ${totalSelectedCount} 個)`);
+            alert(`要 10 個 1。你選了 ${totalSelectedCount} 個 1 !`);
         }
     }
 
