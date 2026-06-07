@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二位數加減法練習（Local storage）</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #2ec4b6;
+            --danger-color: #e71d36;
+            --neutral-color: #f4f6f9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            min-height: 30px;
+        }
+
+        .progress-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #progress-text {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .btn-reset-game {
+            background-color: #dae0e8;
+            color: rgb(106, 100, 100);
+            border: none;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-reset-game:hover {
+            background-color: #b1bcca;
+        }
+
+        .equation-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #222;
+            background-color: var(--neutral-color);
+            padding: 24px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            min-height: 60px;
+        }
+
+        .answer-input {
+            width: 90px;
+            height: 55px;
+            border-bottom: 4px solid var(--primary-color);
+            margin-left: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            background-color: #fff;
+            border-radius: 4px;
+        }
+
+        /* 讓主畫面的答案框看起來可以點擊 */
+        .main-answer-trigger {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .main-answer-trigger:hover {
+            background-color: #f0f7ff;
+        }
+
+        /* 數字鍵盤區 */
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 15px 0;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s ease;
+            color: #333;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background-color: #edf2f7;
+        }
+
+        .btn-clear {
+            background-color: #ffe3e3;
+            border-color: #fdd2d2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-clear:active {
+            background-color: #fcd0d0;
+        }
+        .btn-clear img {
+            height: 30px;
+            width: auto;
+            pointer-events: none;
+        }
+
+        .btn-enter {
+            background-color: #e3faf2;
+            color: var(--success-color);
+            border-color: #c6f6d5;
+        }
+        .btn-enter:active {
+            background-color: #bbf7d0;
+        }
+
+        /* 結果報告區 */
+        .result-screen {
+            display: none;
+        }
+
+        .score-box {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border-radius: 12px;
+        }
+
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .review-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .correct-item {
+            background-color: #e6fffa;
+            color: #1a7f64;
+            border-left: 5px solid var(--success-color);
+        }
+
+        .wrong-item {
+            background-color: #fff5f5;
+            color: #c53030;
+            border-left: 5px solid var(--danger-color);
+        }
+
+        .wrong-details {
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        .btn-restart {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 0;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-restart:hover {
+            background-color: #357abd;
+        }
+
+        /* 彈出式子頁面（鍵盤） */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            font-weight: bold;
+        }
+
+        /* 硬幣內嵌區域樣式 */
+        .coin-helper-panel {
+            margin-top: 15px;
+        }
+
+        /* 改進後的標準注音標題樣式 */
+        .helper-main-title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;               /* 漢字與漢字之間的間距 */
+            margin: 10px 0 15px 0;
+        }
+
+        .ruby-block {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .char {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #444;
+            line-height: 1;
+        }
+
+        .bopo-container {
+            display: inline-flex;
+            align-items: center;     /* 關鍵：讓右側聲調與左側注音垂直居中對齊 */
+            margin-left: 2px;        /* 漢字與注音的間距 */
+        }
+
+        .bopo-text {
+            font-size: 0.65rem;
+            color: #777;
+            writing-mode: vertical-rl; /* 讓注音符號由上往下排 */
+            text-orientation: upright;
+            line-height: 1.1;
+            letter-spacing: -1px;    /* 讓注音符號結構更緊湊 */
+        }
+
+        .bopo-tone {
+            font-size: 0.55rem;
+            color: #777;
+            line-height: 1;
+            margin-left: 1px;        /* 注音與聲調的微小間距 */
+        }
+
+        .helper-header-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0 5px 0;
+            min-height: 26px;
+        }
+
+        .helper-section-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .btn-exchange, .btn-combine, .btn-reset {
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-exchange { background-color: #2ec4b6; }
+        .btn-exchange:hover { background-color: #20a396; }
+
+        .btn-combine { background-color: #896bff; }
+        .btn-combine:hover { background-color: #8352ee; }
+
+        .btn-reset { background-color: #94a3b8; }
+        .btn-reset:hover { background-color: #64748b; }
+
+        .coin-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 10px;
+            min-height: 55px;
+            padding: 12px;
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .coin-container-subtraction-lower {
+            background-color: #f1f5f9;
+            border: 1px dashed #94a3b8;
+        }
+
+        /* 硬幣樣式 */
+        .coin {
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+            user-select: none;
+        }
+
+        .coin-clickable {
+            cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.2s;
+        }
+        .coin-clickable:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .coin-10 { width: 45px; height: 45px; background-color: #eccc68; border: 2px solid #bfa030; font-size: 1.1rem; color: #574b14; }
+        .coin-1  { width: 38px; height: 38px; background-color: #70a1ff; border: 2px solid #1e90ff; font-size: 0.9rem; cursor: pointer; transition: background-color 0.1s; }
+
+        .coin-10.coin-generated-10 {
+            color: #10ac84;
+            border-color: #10ac84;
+        }
+
+        .coin-1.coin-selected {
+            background-color: var(--danger-color);
+            border-color: #b51224;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-screen">
+        <h2>二位數加減法</h2>
+
+        <div class="quiz-header">
+            <div class="progress-wrapper">
+                <span id="progress-text">第 1 / 10 題</span>
+                <button class="btn-reset-game" onclick="resetToFirstQuestion()">重設</button>
+            </div>
+        </div>
+
+        <!-- 主畫面算式區（點擊答案框會彈出鍵盤） -->
+        <div class="equation-area">
+            <span id="equation-text">0 + 0 =</span>
+            <div class="answer-input main-answer-trigger" id="current-answer" onclick="openKeyboardModal()" title="點選輸入答案"></div>
+        </div>
+
+        <!-- 硬幣小幫手直接內嵌在主畫面上 -->
+        <div class="coin-helper-panel">
+            <!-- 修正後的標準直式注音標題區區塊 -->
+            <div class="helper-main-title">
+                <div class="ruby-block">
+                    <span class="char">硬</span>
+                    <div class="bopo-container">
+                        <span class="bopo-text">ㄧㄥ</span>
+                        <span class="bopo-tone">ˋ</span>
+                    </div>
+                </div>
+                <div class="ruby-block">
+                    <span class="char">幣</span>
+                    <div class="bopo-container">
+                        <span class="bopo-text">ㄅㄧ</span>
+                        <span class="bopo-tone">ˋ</span>
+                    </div>
+                </div>
+                <div class="ruby-block">
+                    <span class="char">小</span>
+                    <div class="bopo-container">
+                        <span class="bopo-text">ㄒㄧㄠ</span>
+                        <span class="bopo-tone">ˇ</span>
+                    </div>
+                </div>
+                <div class="ruby-block">
+                    <span class="char">幫</span>
+                    <div class="bopo-container">
+                        <span class="bopo-text">ㄅㄤ</span>
+                        <!-- 第一聲不需標注聲調 -->
+                    </div>
+                </div>
+                <div class="ruby-block">
+                    <span class="char">手</span>
+                    <div class="bopo-container">
+                        <span class="bopo-text">ㄕㄡ</span>
+                        <span class="bopo-tone">ˇ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="helper-header-block">
+                    <div class="helper-section-title" id="upper-title">上半部</div>
+                    <button class="btn-exchange" id="exchange-btn" onclick="exchangeTenToOnes()">換 10 個 1</button>
+                    <button class="btn-combine" id="combine-btn" onclick="combineOnesToTen()">湊10</button>
+                </div>
+                <div class="coin-container" id="upper-coin-box"></div>
+            </div>
+
+            <div>
+                <div class="helper-header-block">
+                    <div class="helper-section-title" id="lower-title">下半部</div>
+                    <button class="btn-reset" id="reset-btn" onclick="resetHelperCoins()">重置硬幣</button>
+                </div>
+                <div class="coin-container" id="lower-coin-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 測驗結束報告區 -->
+    <div id="result-screen" class="result-screen">
+        <h2>測驗結束</h2>
+        <div class="score-box">
+            您的總分
+            <span id="final-score" class="score-num">0</span>
+        </div>
+        <div class="review-list" id="review-container"></div>
+        <button class="btn-restart" onclick="startNewGame()">再玩一次</button>
+    </div>
+</div>
+
+<!-- 數字鍵盤的彈出式子頁面 -->
+<div class="modal-overlay" id="keyboard-modal" onclick="closeKeyboardOutside(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="modal-close" onclick="closeKeyboardModal()">&times;</span>
+        <h3 style="margin-top: 5px; color: #333; text-align: center; margin-bottom: 15px;">請輸入答案</h3>
+
+        <!-- 子頁面依然保有的原算式區 -->
+        <div class="equation-area" style="font-size: 2.2rem; padding: 16px 12px; margin-bottom: 20px;">
+            <span id="modal-equation-text">0 + 0 =</span>
+            <div class="answer-input" id="modal-current-answer" style="border-bottom-color: #2ec4b6; color: #2ec4b6;"></div>
+        </div>
+
+        <!-- 數字鍵盤搬移至此 -->
+        <div class="keyboard">
+            <button class="btn" onclick="pressNum(1)">1</button>
+            <button class="btn" onclick="pressNum(2)">2</button>
+            <button class="btn" onclick="pressNum(3)">3</button>
+            <button class="btn" onclick="pressNum(4)">4</button>
+            <button class="btn" onclick="pressNum(5)">5</button>
+            <button class="btn" onclick="pressNum(6)">6</button>
+            <button class="btn" onclick="pressNum(7)">7</button>
+            <button class="btn" onclick="pressNum(8)">8</button>
+            <button class="btn" onclick="pressNum(9)">9</button>
+
+            <button class="btn btn-clear" onclick="pressClear()">
+                <img src="eraser.png" alt="清除">
+            </button>
+
+            <button class="btn" onclick="pressNum(0)">0</button>
+            <button class="btn btn-enter" onclick="pressEnter()">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const TOTAL_QUESTIONS = 10;
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let score = 0;
+
+    // 硬幣狀態追蹤
+    let currentHelper10s = 0;
+    let currentHelper1s = 0;
+    let lowerHelper10s = 0;
+    let lowerHelper1s = 0;
+    let staticLower10s = 0;
+    let staticLower1s = 0;
+    let generated10sCount = 0;
+
+    function initGame() {
+        const savedQuestions = localStorage.getItem('quiz_questions');
+        const savedIndex = localStorage.getItem('quiz_currentQuestionIndex');
+        const savedAnswers = localStorage.getItem('quiz_userAnswers');
+        const savedScore = localStorage.getItem('quiz_score');
+
+        if (savedQuestions && savedIndex !== null && parseInt(savedIndex, 10) < TOTAL_QUESTIONS) {
+            questions = JSON.parse(savedQuestions);
+            currentQuestionIndex = parseInt(savedIndex, 10);
+            userAnswers = savedAnswers ? JSON.parse(savedAnswers) : [];
+            score = savedScore ? parseInt(savedScore, 10) : 0;
+
+            document.getElementById('quiz-screen').style.display = 'block';
+            document.getElementById('result-screen').style.display = 'none';
+            showQuestion();
+        } else {
+            startNewGame();
+        }
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem('quiz_questions', JSON.stringify(questions));
+        localStorage.setItem('quiz_currentQuestionIndex', currentQuestionIndex);
+        localStorage.setItem('quiz_userAnswers', JSON.stringify(userAnswers));
+        localStorage.setItem('quiz_score', score);
+    }
+
+    function clearLocalStorage() {
+        localStorage.removeItem('quiz_questions');
+        localStorage.removeItem('quiz_currentQuestionIndex');
+        localStorage.removeItem('quiz_userAnswers');
+        localStorage.removeItem('quiz_score');
+    }
+
+    function startNewGame() {
+        questions = generateBalancedQuestions();
+        currentQuestionIndex = 0;
+        userAnswers = [];
+        score = 0;
+
+        saveToLocalStorage();
+
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('result-screen').style.display = 'none';
+
+        showQuestion();
+    }
+
+    function resetToFirstQuestion() {
+        if (confirm('確定要清除目前的進度，重新從第一題開始嗎？')) {
+            clearLocalStorage();
+            startNewGame();
+        }
+    }
+
+    function generateBalancedQuestions() {
+        const additionPool = [];
+        const subtractionPool = [];
+
+        for (let a = 10; a <= 99; a++) {
+            for (let b = 10; b <= 99; b++) {
+                if (a + b >= 0 && a + b <= 99) {
+                    additionPool.push({ num1: a, operator: '+', num2: b, answer: a + b });
+                }
+                if (a - b >= 0 && a - b <= 99) {
+                    subtractionPool.push({ num1: a, operator: '-', num2: b, answer: a - b });
+                }
+            }
+        }
+
+        const shuffledAdd = additionPool.sort(() => 0.5 - Math.random()).slice(0, 5);
+        const shuffledSub = subtractionPool.sort(() => 0.5 - Math.random()).slice(0, 5);
+
+        const combinedQuestions = [...shuffledAdd, ...shuffledSub];
+        return combinedQuestions.sort(() => 0.5 - Math.random());
+    }
+
+    function showQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        // 更新主畫面
+        document.getElementById('progress-text').innerText = `第 ${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS} 題`;
+        document.getElementById('equation-text').innerText = `${currentQuestion.num1} ${currentQuestion.operator} ${currentQuestion.num2} =`;
+        document.getElementById('current-answer').innerText = '';
+
+        // 一換題就自動初始化並重繪硬幣盤面
+        autoInitCoinHelper();
+    }
+
+    /* --- 鍵盤子頁面視窗控制邏輯 --- */
+    function openKeyboardModal() {
+        const currentQuestion = questions[currentQuestionIndex];
+        // 帶入子頁面的題目
+        document.getElementById('modal-equation-text').innerText = `${currentQuestion.num1} ${currentQuestion.operator} ${currentQuestion.num2} =`;
+        // 把主畫面的文字同步到子頁面的輸入框中
+        document.getElementById('modal-current-answer').innerText = document.getElementById('current-answer').innerText;
+        // 顯示彈窗
+        document.getElementById('keyboard-modal').style.display = 'flex';
+    }
+
+    function closeKeyboardModal() {
+        document.getElementById('keyboard-modal').style.display = 'none';
+    }
+
+    function closeKeyboardOutside(event) {
+        if (event.target.id === 'keyboard-modal') {
+            closeKeyboardModal();
+        }
+    }
+
+    /* --- 數字鍵盤輸入邏輯（同步更改子頁面與主畫面的框） --- */
+    function pressNum(num) {
+        const modalDisplay = document.getElementById('modal-current-answer');
+        const mainDisplay = document.getElementById('current-answer');
+
+        if (modalDisplay.innerText.length < 2) {
+            modalDisplay.innerText += num;
+            mainDisplay.innerText = modalDisplay.innerText; // 同步回主畫面
+        }
+    }
+
+    function pressClear() {
+        document.getElementById('modal-current-answer').innerText = '';
+        document.getElementById('current-answer').innerText = '';
+    }
+
+    function pressEnter() {
+        const modalDisplay = document.getElementById('modal-current-answer');
+        const answerText = modalDisplay.innerText;
+
+        if (answerText === '') return;
+
+        const userAnswer = parseInt(answerText, 10);
+        const currentQuestion = questions[currentQuestionIndex];
+
+        const isCorrect = (userAnswer === currentQuestion.answer);
+        if (isCorrect) score += 10;
+
+        userAnswers.push({
+            question: `${currentQuestion.num1} ${currentQuestion.operator} ${currentQuestion.num2}`,
+            userAns: userAnswer,
+            correctAns: currentQuestion.answer,
+            isCorrect: isCorrect
+        });
+
+        currentQuestionIndex++;
+        saveToLocalStorage();
+
+        // 答題完成，關閉子頁面鍵盤
+        closeKeyboardModal();
+
+        if (currentQuestionIndex < TOTAL_QUESTIONS) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        clearLocalStorage();
+
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('final-score').innerText = score;
+
+        const container = document.getElementById('review-container');
+        container.innerHTML = '';
+
+        userAnswers.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('review-item');
+
+            if (item.isCorrect) {
+                itemDiv.classList.add('correct-item');
+                itemDiv.innerHTML = `
+                    <span>題 ${index + 1}: ${item.question} = ${item.userAns}</span>
+                    <span>✓ 正確</span>
+                `;
+            } else {
+                itemDiv.classList.add('wrong-item');
+                itemDiv.innerHTML = `
+                    <span>題 ${index + 1}: ${item.question} = </span>
+                    <div class="wrong-details">
+                        <div>您的答案: ${item.userAns} ✗</div>
+                        <div>正確答案: ${item.correctAns}</div>
+                    </div>
+                `;
+            }
+            container.appendChild(itemDiv);
+        });
+    }
+
+    /* --- 硬幣小幫手核心控制 --- */
+    function autoInitCoinHelper() {
+        const currentQuestion = questions[currentQuestionIndex];
+        const num1 = currentQuestion.num1;
+        const num2 = currentQuestion.num2;
+        const op = currentQuestion.operator;
+        const isAddition = (op === '+');
+
+        const lowerBox = document.getElementById('lower-coin-box');
+        const exchangeBtn = document.getElementById('exchange-btn');
+        const combineBtn = document.getElementById('combine-btn');
+
+        currentHelper10s = Math.floor(num1 / 10);
+        currentHelper1s = num1 % 10;
+        lowerHelper10s = 0;
+        lowerHelper1s = 0;
+        generated10sCount = 0;
+        staticLower10s = Math.floor(num2 / 10);
+        staticLower1s = num2 % 10;
+
+        lowerBox.classList.remove('coin-container-subtraction-lower');
+        lowerBox.innerHTML = '';
+
+        if (isAddition) {
+            exchangeBtn.style.display = 'none';
+            combineBtn.style.display = 'inline-block';
+            document.getElementById('upper-title').innerText = `被加數：${num1}`;
+            document.getElementById('lower-title').innerText = `加數：${num2}`;
+
+            refreshCoinDisplay(false);
+            renderStaticCoins(lowerBox);
+        } else {
+            exchangeBtn.style.display = 'inline-block';
+            combineBtn.style.display = 'none';
+            document.getElementById('upper-title').innerText = `被減數：${num1}`;
+            document.getElementById('lower-title').innerText = `減數（要拿走：${num2}）`;
+            lowerBox.classList.add('coin-container-subtraction-lower');
+
+            refreshCoinDisplay(true);
+        }
+    }
+
+    function exchangeTenToOnes() {
+        if (currentHelper10s > 0) {
+            currentHelper10s -= 1;
+            currentHelper1s += 10;
+            refreshCoinDisplay(true);
+        }
+    }
+
+    function combineOnesToTen() {
+        const upperSelected = document.querySelectorAll('#upper-coin-box .coin-selected');
+        const lowerSelected = document.querySelectorAll('#lower-coin-box .coin-selected');
+        const totalSelectedCount = upperSelected.length + lowerSelected.length;
+
+        if (totalSelectedCount === 10) {
+            currentHelper1s -= upperSelected.length;
+            staticLower1s -= lowerSelected.length;
+            generated10sCount += 1;
+            currentHelper10s += 1;
+
+            refreshCoinDisplay(false);
+            renderStaticCoins(document.getElementById('lower-coin-box'));
+        } else {
+            alert(`圈選有誤！必須剛好選 10 個紅硬幣才能湊成 10 元。(目前選了 ${totalSelectedCount} 個)`);
+        }
+    }
+
+    function resetHelperCoins() {
+        autoInitCoinHelper();
+    }
+
+    function moveCoinToLower(value) {
+        if (value === 10 && currentHelper10s > 0) {
+            currentHelper10s--;
+            lowerHelper10s++;
+        } else if (value === 1 && currentHelper1s > 0) {
+            currentHelper1s--;
+            lowerHelper1s++;
+        }
+        refreshCoinDisplay(true);
+    }
+
+    function toggleCoinColor(event) {
+        event.currentTarget.classList.toggle('coin-selected');
+    }
+
+    function refreshCoinDisplay(isSubtractionMode) {
+        const upperBox = document.getElementById('upper-coin-box');
+        const lowerBox = document.getElementById('lower-coin-box');
+        const exchangeBtn = document.getElementById('exchange-btn');
+
+        upperBox.innerHTML = '';
+        if (isSubtractionMode) lowerBox.innerHTML = '';
+
+        const regular10sCount = isSubtractionMode ? currentHelper10s : (currentHelper10s - generated10sCount);
+        for (let i = 0; i < regular10sCount; i++) {
+            const coin = document.createElement('div');
+            coin.classList.add('coin', 'coin-10');
+            if (isSubtractionMode) {
+                coin.classList.add('coin-clickable');
+                coin.onclick = () => moveCoinToLower(10);
+            }
+            coin.innerText = '10';
+            upperBox.appendChild(coin);
+        }
+
+        if (!isSubtractionMode) {
+            for (let i = 0; i < generated10sCount; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin', 'coin-10', 'coin-generated-10');
+                coin.innerText = '10';
+                upperBox.appendChild(coin);
+            }
+        }
+
+        for (let i = 0; i < currentHelper1s; i++) {
+            const coin = document.createElement('div');
+            coin.classList.add('coin', 'coin-1');
+            if (isSubtractionMode) {
+                coin.classList.add('coin-clickable');
+                coin.onclick = () => moveCoinToLower(1);
+            } else {
+                coin.onclick = toggleCoinColor;
+            }
+            coin.innerText = '1';
+            upperBox.appendChild(coin);
+        }
+
+        if (isSubtractionMode) {
+            for (let i = 0; i < lowerHelper10s; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin', 'coin-10');
+                coin.innerText = '10';
+                lowerBox.appendChild(coin);
+            }
+            for (let i = 0; i < lowerHelper1s; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin', 'coin-1');
+                coin.onclick = toggleCoinColor;
+                coin.innerText = '1';
+                lowerBox.appendChild(coin);
+            }
+        }
+
+        if (currentHelper10s === 0) {
+            exchangeBtn.style.opacity = '0.5';
+            exchangeBtn.style.cursor = 'not-allowed';
+        } else {
+            exchangeBtn.style.opacity = '1';
+            exchangeBtn.style.cursor = 'pointer';
+        }
+    }
+
+    function renderStaticCoins(container) {
+        container.innerHTML = '';
+
+        for (let i = 0; i < staticLower10s; i++) {
+            const coin = document.createElement('div');
+            coin.classList.add('coin', 'coin-10');
+            coin.innerText = '10';
+            container.appendChild(coin);
+        }
+        for (let i = 0; i < staticLower1s; i++) {
+            const coin = document.createElement('div');
+            coin.classList.add('coin', 'coin-1');
+            coin.onclick = toggleCoinColor;
+            coin.innerText = '1';
+            container.appendChild(coin);
+        }
+    }
+
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
