@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二位數加減法練習（unlock zoom）</title>
+    <title>二位數加減法練習（解鎖雙指縮放，禁用雙擊放大）</title>
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -12,9 +12,10 @@
             --neutral-color: #f4f6f9;
         }
 
-        /* 已移除 touch-action: none 與 overflow: hidden，允許正常縮放與滾動 */
+        /* 核心修正：加入 touch-action: manipulation 禁用雙擊放大，同時維持雙指手勢縮放 */
         html, body {
             -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
             height: 100%;
             width: 100%;
         }
@@ -457,8 +458,6 @@
 </div>
 
 <script>
-    /* 已清除所有硬性攔截 Chrome 縮放手勢的 JavaScript 事件監聽器 */
-
     const TOTAL_QUESTIONS = 10;
     let questions = [];
     let currentQuestionIndex = 0;
@@ -651,7 +650,7 @@
                     <span>題 ${index + 1}: ${item.question} = </span>
                     <div class="wrong-details">
                         <div>您的答案: ${item.userAns} ✗</div>
-                        <div>正確答案: ${item.correctAns}</div>
+                        <div>可靠答案: ${item.correctAns}</div>
                     </div>
                 `;
             }
