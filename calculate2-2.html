@@ -2,9 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport 基本宣告 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>二位數加減法練習（Local storage）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二位數加減法練習（unlock zoom）</title>
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -13,11 +12,9 @@
             --neutral-color: #f4f6f9;
         }
 
-        /* 核心修正 1：直接從網頁最頂層封鎖瀏覽器的所有預設縮放手勢 */
+        /* 已移除 touch-action: none 與 overflow: hidden，允許正常縮放與滾動 */
         html, body {
             -webkit-text-size-adjust: 100%;
-            touch-action: none !important; /* 徹底封鎖全網頁的雙擊放大與雙指縮放 */
-            overflow: hidden; /* 防止網頁因縮放產生怪異滾動條 */
             height: 100%;
             width: 100%;
         }
@@ -30,10 +27,10 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #eef2f7;
             margin: 0;
-            padding: 10px 20px 20px 20px; /* 👈 把第一個數字改小（例如 10px），這就是網頁最頂端的留白 */
+            padding: 10px 20px 20px 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 👈 將 center 改為 flex-start，讓內容靠頂部對齊 */
+            align-items: flex-start;
             min-height: 100vh;
         }
 
@@ -116,7 +113,6 @@
             border-radius: 4px;
         }
 
-        /* 讓主畫面的答案框看起來可以點擊 */
         .main-answer-trigger {
             cursor: pointer;
             transition: background-color 0.2s;
@@ -206,8 +202,6 @@
             border-radius: 12px;
             padding: 10px;
             margin-bottom: 20px;
-            /* 核心修正 2：因為全域禁用了 touch-action，這裡必須單獨允許上下滾動，否則錯題清單會無法滑動 */
-            touch-action: pan-y !important;
         }
 
         .review-item {
@@ -263,10 +257,10 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.4);
-            display: flex;             /* 確保維持 flex 佈局 */
+            display: flex;
             justify-content: center;
-            align-items: flex-start;   /* 👈 核心修正：從 center 改為 flex-start (靠頂部對齊) */
-            padding-top: 40px;         /* 👈 新增這一行：設定子視窗距離網頁最上方要留多少空格（可自由調整，例如 20px 或 30px） */
+            align-items: flex-start;
+            padding-top: 40px;
             z-index: 1000;
         }
 
@@ -395,15 +389,12 @@
             </div>
         </div>
 
-        <!-- 主畫面算式區（點擊答案框會彈出鍵盤） -->
         <div class="equation-area">
             <span id="equation-text">0 + 0 =</span>
             <div class="answer-input main-answer-trigger" id="current-answer" onclick="openKeyboardModal()" title="點選輸入答案"></div>
         </div>
 
-        <!-- 硬幣小幫手直接內嵌在主畫面上 -->
         <div class="coin-helper-panel">
-
             <div>
                 <div class="helper-header-block">
                     <div class="helper-section-title" id="upper-title">上半部</div>
@@ -423,7 +414,6 @@
         </div>
     </div>
 
-    <!-- 測驗結束報告區 -->
     <div id="result-screen" class="result-screen">
         <h2>測驗結束</h2>
         <div class="score-box">
@@ -435,19 +425,16 @@
     </div>
 </div>
 
-<!-- 數字鍵盤的彈出式子頁面 -->
 <div class="modal-overlay" id="keyboard-modal" onclick="closeKeyboardOutside(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="modal-close" onclick="closeKeyboardModal()">&times;</span>
         <h3 style="margin-top: 5px; color: #333; text-align: center; margin-bottom: 15px;">請輸入答案</h3>
 
-        <!-- 子頁面依然保有的原算式區 -->
         <div class="equation-area" style="font-size: 2.2rem; padding: 16px 12px; margin-bottom: 20px;">
             <span id="modal-equation-text">0 + 0 =</span>
             <div class="answer-input" id="modal-current-answer" style="border-bottom-color: #2ec4b6; color: #2ec4b6;"></div>
         </div>
 
-        <!-- 數字鍵盤搬移至此 -->
         <div class="keyboard">
             <button class="btn" onclick="pressNum(1)">1</button>
             <button class="btn" onclick="pressNum(2)">2</button>
@@ -470,35 +457,7 @@
 </div>
 
 <script>
-    /* 核心修正 3：多維度 JS 攔截層，徹底解決 Chrome 忽略 user-scalable=no 的問題 */
-
-    // ① 攔截手機版 Chrome / 觸控螢幕的任何多指觸控與捏合（Pinch）行為
-    document.addEventListener('touchstart', function (event) {
-        if (event.touches.length > 1) {
-            event.preventDefault();
-        }
-    }, { passive: false, capture: true });
-
-    document.addEventListener('touchmove', function (event) {
-        if (event.touches.length > 1) {
-            event.preventDefault();
-        }
-    }, { passive: false, capture: true });
-
-    // ② 攔截桌機版 Chrome 的「Ctrl + 滾輪」以及「筆電觸控板雙指捏合」產生的縮放
-    document.addEventListener('wheel', function (event) {
-        if (event.ctrlKey) {
-            event.preventDefault();
-        }
-    }, { passive: false, capture: true });
-
-    // ③ 攔截桌機版 Chrome 的瀏覽器快捷鍵縮放（Ctrl 加、Ctrl 減、Ctrl 零）
-    document.addEventListener('keydown', function (event) {
-        if (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '=' || event.key === '0')) {
-            event.preventDefault();
-        }
-    }, { capture: true });
-
+    /* 已清除所有硬性攔截 Chrome 縮放手勢的 JavaScript 事件監聽器 */
 
     const TOTAL_QUESTIONS = 10;
     let questions = [];
