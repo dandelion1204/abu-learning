@@ -10,38 +10,38 @@
 html,body{margin:0;height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC",sans-serif;background:var(--bg);color:var(--ink)}
 .app{max-width:560px;height:100dvh;margin:auto;padding:8px 11px;display:flex;flex-direction:column}
-h1{text-align:center;font-size:20px;margin:0 0 7px}
+h1{text-align:center;font-size:25px;margin:0 0 7px}
 #correction{font-size:15px;color:var(--bad);margin-left:7px}
 .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:10px;padding:8px;touch-action:manipulation}
+button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:10px;padding:9px 8px;touch-action:manipulation}
 .mode.active{background:var(--accent);font-weight:700}
 .work-area{position:relative;flex:1;min-height:0;margin-top:8px}
-.board{height:100%;background:var(--card);border-radius:18px;padding:6px 55px 5px 12px;box-shadow:0 4px 16px #0000000d;display:flex;flex-direction:column}
+.board{height:100%;background:var(--card);border-radius:18px;padding:6px 68px 5px 68px;box-shadow:0 4px 16px #0000000d;display:flex;flex-direction:column}
 .hint{text-align:center;font-size:11px;color:#737e90;margin:0}
-.sum{width:218px;margin:auto;position:relative}
-.row{height:44px;display:grid;grid-template-columns:34px repeat(3,52px);align-items:center;justify-content:center}
+.sum{width:360px;margin:auto;position:relative}
+.row{height:80px;display:grid;grid-template-columns:48px repeat(3,86px);align-items:center;justify-content:center}
 /* 刻意保留空隙：上方小框與被加數／被減數十位數不要貼在一起 */
-.carry-row{height:31px;margin-bottom:13px}
-.op{font-size:31px;text-align:center}
-.digit,.answer-cell,.carry-cell{width:44px;height:42px;display:flex;align-items:center;justify-content:center;font-size:30px;position:relative}
-.carry-cell{height:29px;font-size:21px;border:2px solid #9ba8ba;border-radius:7px;background:#fff;cursor:pointer}
-.crossable{border:2px solid #c6cedb;border-radius:9px;background:#fff;cursor:pointer}
-.crossable.crossed::after{content:"";position:absolute;width:54px;height:3px;background:#d55252;transform:rotate(-28deg);border-radius:3px}
+.carry-row{height:55px;margin-bottom:22px}
+.op{font-size:56px;text-align:center}
+.digit,.answer-cell,.carry-cell{width:76px;height:74px;display:flex;align-items:center;justify-content:center;font-size:54px;position:relative}
+.carry-cell{height:52px;font-size:38px;border:3px solid #9ba8ba;border-radius:11px;background:#fff;cursor:pointer}
+.crossable{border:3px solid #c6cedb;border-radius:10px;background:#fff;cursor:pointer}
+.crossable.crossed::after{content:"";position:absolute;width:88px;height:4px;background:#d55252;transform:rotate(-28deg);border-radius:3px}
 .borrow-ten{display:none}
 #borrowWrap{
  position:relative;
- width:44px;
- height:42px;
+ width:76px;
+ height:74px;
  display:flex;
  align-items:center;
  justify-content:center;
 }
 #topOnes.borrowed #borrowWrap{
- height:76px;
- margin-top:-34px;
- padding-top:31px;
+ height:124px;
+ margin-top:-50px;
+ padding-top:49px;
  border:4px solid #168ca4;
- border-radius:18px;
+ border-radius:20px;
 }
 #topOnes.borrowed .borrow-ten{
  display:block;
@@ -54,15 +54,117 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  font-weight:700;
  color:#168ca4;
 }
-.rule{height:3px;background:var(--ink);margin:0 0 3px 34px;width:156px}
-.answer-cell{border:2px solid #7d899b;border-radius:8px;margin:0 3px;font-size:29px;background:#fff;cursor:pointer}
+.rule{height:4px;background:var(--ink);margin:0 0 5px 48px;width:258px}
+.answer-cell{border:3px solid #7d899b;border-radius:12px;margin:0 5px;font-size:52px;background:#fff;cursor:pointer}
 .answer-cell.selected,.carry-cell.selected{outline:4px solid #b7d8ff}
-.message{text-align:center;min-height:18px;font-size:13px;font-weight:700;margin-top:1px}
-#next{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;padding:10px 5px;line-height:1.2;font-size:17px;font-weight:700;background:#f2f2f2}
-#next span{display:block}
-.keyboard{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%;margin-top:6px}
+.message{font-weight:700}
+.vertical-message{
+ position:absolute;
+ left:5px;
+ top:50%;
+ transform:translateY(-50%);
+ width:58px;
+ min-height:0;
+ margin:0;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ font-size:18px;
+ line-height:1.05;
+ color:#c63d3d;
+ z-index:2;
+}
+
+.vertical-message.two-lines{
+ width:116px;
+ flex-direction:row;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+}
+.vertical-message .message-line{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+}
+
+.vertical-message .zhuyin{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ margin:2px 0;
+}
+.vertical-message .zhuyin .han{
+ font-size:19px;
+ line-height:21px;
+}
+.vertical-message .zhuyin .bpmf{
+ font-size:9px;
+ line-height:10px;
+ margin-top:3px;
+}
+.vertical-message .plain-char{
+ display:block;
+ margin:2px 0;
+ font-size:18px;
+ line-height:20px;
+}
+#next{
+ position:absolute;
+ right:4px;
+ top:50%;
+ transform:translateY(-50%);
+ width:58px;
+ min-height:210px;
+ margin:0;
+ padding:8px 3px;
+ font-weight:700;
+ background:#f2f2f2;
+ z-index:2;
+}
+.next-vertical{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+}
+.next-unit{
+ display:grid;
+ grid-template-rows:22px 11px;
+ place-items:center;
+ width:50px;
+ line-height:1;
+}
+.next-unit b{
+ display:block;
+ width:50px;
+ text-align:center;
+ font-size:25px;
+ line-height:27px;
+ font-weight:700;
+}
+.next-unit small{
+ display:block;
+ width:50px;
+ margin:4px 0 0;
+ padding:0;
+ text-align:center;
+ font-size:10px;
+ line-height:10px;
+ font-weight:500;
+ color:#737e90;
+ white-space:nowrap;
+ letter-spacing:0;
+}
+
+#next span{display:inline}
+.keyboard{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:430px;margin:7px auto 0}
 .key{font-size:21px;padding:9px 2px;min-width:0}
-.key.clear{font-size:15px;background:#f3e8ff}
+.key.clear{font-size:15px;background:#f3e8ff;grid-column:span 2}
 .note{text-align:center;color:#7a8494;font-size:10px;margin-top:2px}
 
 /* 成績畫面 */
@@ -81,26 +183,67 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  h1{font-size:18px;margin-bottom:4px}
  .app{padding-top:5px}.work-area{margin-top:5px}
  .board{padding-top:3px;padding-bottom:3px}.hint,.note{display:none}
- .row{height:39px}.carry-row{height:27px;margin-bottom:10px}
- .digit,.answer-cell{height:38px;font-size:28px}
- .keyboard{margin-top:4px}.key{padding:7px 2px}
+ .sum{width:318px}
+ .row{height:69px;grid-template-columns:42px repeat(3,76px)}
+ .carry-row{height:47px;margin-bottom:17px}
+ .digit,.answer-cell{width:67px;height:64px;font-size:47px}
+ .carry-cell{width:67px;height:46px;font-size:34px}
+ .op{font-size:49px}
+ .rule{margin-left:42px;width:228px}
+ .keyboard{margin-top:4px}.key{padding:6px 2px}
 }
+
+/* 國字右側直式注音 */
+.zhuyin{
+ display:inline-flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ vertical-align:middle;
+ white-space:nowrap;
+ line-height:1;
+ margin:0 .02em;
+}
+.zhuyin .han{
+ display:block;
+ line-height:1.05;
+}
+.zhuyin .bpmf{
+ display:block;
+ writing-mode:horizontal-tb;
+ text-orientation:mixed;
+ font-size:.34em;
+ line-height:1;
+ margin-top:.20em;
+ letter-spacing:0;
+ font-weight:500;
+ color:#6f7888;
+}
+.zhuyin-word{
+ display:inline-flex;
+ align-items:flex-start;
+ gap:.05em;
+ white-space:nowrap;
+}
+.mode .bpmf,#next .bpmf,.key.clear .bpmf{font-size:.38em}
+.mode,.key.clear{line-height:1}
+
 </style>
 </head>
 <body>
 <main class="app">
-<h1><span id="progress">1/10</span> 直式計算練習 <span id="correction"></span></h1>
+<h1><span id="progress">1/10</span> <span id="titleRuby"></span> <span id="correction"></span></h1>
 
 <div class="modes" id="modes">
- <button class="mode" data-mode="add">加法</button>
- <button class="mode" data-mode="sub">減法</button>
- <button class="mode active" data-mode="mix">綜合</button>
+ <button class="mode" data-mode="add" data-label="加法"></button>
+ <button class="mode" data-mode="sub" data-label="減法"></button>
+ <button class="mode active" data-mode="mix" data-label="綜合"></button>
 </div>
 
 <div class="practice" id="practice">
  <div class="work-area">
   <section class="board">
-   <div class="hint">點選格子，再用下面的數字鍵盤填寫</div>
+   <div class="hint" id="hintRuby"></div>
    <div class="sum">
     <div class="row carry-row">
      <div></div><div></div><div id="carry" class="carry-cell"></div><div></div>
@@ -119,22 +262,77 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
      <div class="answer-cell" data-pos="0"></div>
     </div>
    </div>
-   <div id="message" class="message"></div>
+   <div id="message" class="message vertical-message"></div>
+   <button id="next" aria-label="下一題">
+ <span class="next-vertical">
+  <span class="next-unit"><b>下</b><small>ㄒㄧㄚˋ</small></span>
+  <span class="next-unit"><b>一</b><small>ㄧ</small></span>
+  <span class="next-unit"><b>題</b><small>ㄊㄧˊ</small></span>
+ </span>
+</button>
   </section>
-  <button id="next" aria-label="下一題"><span>下</span><span>一</span><span>題</span></button>
  </div>
  <div class="keyboard" id="keyboard"></div>
- <div class="note">十位數按一下可劃線，再按一次取消。</div>
+ <div class="note" id="noteRuby"></div>
 </div>
 
 <section class="results" id="results">
  <div class="score" id="score"></div>
  <div class="result-list" id="resultList"></div>
- <button class="restart" id="restart">再練 10 題</button>
+ <button class="restart" id="restart"><span id="restartRuby"></span></button>
 </section>
 </main>
 
 <script>
+
+const ZHUYIN={
+ "加":"ㄐㄧㄚ","法":"ㄈㄚˇ","減":"ㄐㄧㄢˇ","綜":"ㄗㄨㄥˋ","合":"ㄏㄜˊ",
+ "直":"ㄓˊ","式":"ㄕˋ","計":"ㄐㄧˋ","算":"ㄙㄨㄢˋ","練":"ㄌㄧㄢˋ","習":"ㄒㄧˊ",
+ "訂":"ㄉㄧㄥˋ","正":"ㄓㄥˋ","點":"ㄉㄧㄢˇ","選":"ㄒㄩㄢˇ","格":"ㄍㄜˊ",
+ "子":"ㄗ˙","再":"ㄗㄞˋ","用":"ㄩㄥˋ","下":"ㄒㄧㄚˋ","面":"ㄇㄧㄢˋ",
+ "的":"ㄉㄜ˙","數":"ㄕㄨˋ","字":"ㄗˋ","鍵":"ㄐㄧㄢˋ","盤":"ㄆㄢˊ",
+ "填":"ㄊㄧㄢˊ","寫":"ㄒㄧㄝˇ","一":"ㄧ","題":"ㄊㄧˊ","清":"ㄑㄧㄥ","除":"ㄔㄨˊ",
+ "十":"ㄕˊ","位":"ㄨㄟˋ","按":"ㄢˋ","可":"ㄎㄜˇ","劃":"ㄏㄨㄚˋ","線":"ㄒㄧㄢˋ",
+ "取":"ㄑㄩˇ","消":"ㄒㄧㄠ","先":"ㄒㄧㄢ","答":"ㄉㄚˊ","案":"ㄢˋ","喔":"ㄛ",
+ "錯":"ㄘㄨㄛˋ","了":"ㄌㄜ˙","次":"ㄘˋ","最":"ㄗㄨㄟˋ","前":"ㄑㄧㄢˊ",
+ "不":"ㄅㄨˋ","分":"ㄈㄣ","曾":"ㄘㄥˊ","對":"ㄉㄨㄟˋ","確":"ㄑㄩㄝˋ",
+ "開":"ㄎㄞ","始":"ㄕˇ"
+};
+function rubyText(text){
+ return [...text].map(ch=>{
+   const z=ZHUYIN[ch];
+   return z ? `<span class="zhuyin"><span class="han">${ch}</span><span class="bpmf">${z}</span></span>` : ch;
+ }).join("");
+}
+function setRuby(el,text){ el.innerHTML=rubyText(text); }
+function verticalChars(text){
+ return [...text].map(ch=>{
+   const z=ZHUYIN[ch];
+   if(z){
+     return `<span class="zhuyin"><span class="han">${ch}</span><span class="bpmf">${z}</span></span>`;
+   }
+   if(ch===" ") return "";
+   return `<span class="plain-char">${ch}</span>`;
+ }).join("");
+}
+function setVerticalMessage(text){
+ const el=$("#message");
+ if(!text){el.innerHTML="";return;}
+
+ // 前導 0 提醒固定分兩行／兩列顯示：
+ // 最前面數字
+ // 不用填0
+ if(text==="最前面的數字不用填 0 喔"){
+   el.classList.add("two-lines");
+   el.innerHTML=
+     `<span class="message-line">${verticalChars("最前面數字")}</span>`+
+     `<span class="message-line">${verticalChars("不用填0")}</span>`;
+   return;
+ }
+ el.classList.remove("two-lines");
+ el.innerHTML=verticalChars(text);
+}
+
 let mode="mix", current={}, selected=null, questionNo=1, records=[], correcting=false;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
@@ -148,7 +346,7 @@ function newProblem(){
 }
 function render(){
  $("#progress").textContent=questionNo+"/10";
- $("#correction").textContent=correcting?"訂正":"";
+ setRuby($("#correction"), correcting?"訂正":"");
  $("#topTens").textContent=Math.floor(current.a/10);
  $("#onesValue").textContent=current.a%10;
  $("#topOnes").classList.remove("borrowed");
@@ -214,7 +412,7 @@ const kb=$("#keyboard");
  let b=document.createElement("button");b.className="key";b.textContent=n;b.onclick=()=>inputDigit(n);kb.appendChild(b);
 });
 let clear=document.createElement("button");
-clear.className="key clear";clear.textContent="清除";
+clear.className="key clear";setRuby(clear,"清除");
 clear.onclick=()=>{
  if(selected){
    selected.textContent="";
@@ -226,27 +424,27 @@ clear.onclick=()=>{
  }
 };
 kb.appendChild(clear);
-kb.appendChild(document.createElement("div"));
+
 
 /* 「下一題」同時負責判斷答案；不另外占一個檢查答案按鈕 */
 $("#next").onclick=()=>{
  const ans=typedAnswer();
- if(ans===null){$("#message").style.color="#c63d3d";$("#message").textContent="先填答案喔";return}
+ if(ans===null){$("#message").style.color="#c63d3d";setVerticalMessage("先填答案喔");return}
 
  // 送出時才檢查前導 0：
  // 單獨的「0」合法；但 08、05、013 這類寫法不接受。
  if(ans.raw.length>1 && ans.raw.startsWith("0")){
    $("#message").style.color="#c63d3d";
-   $("#message").textContent="最前面的數字不用填 0 喔";
+   setVerticalMessage("最前面的數字不用填 0 喔");
    return;
  }
 
  if(ans.value!==current.answer){
    current.firstWrong=true;
    correcting=true;
-   $("#correction").textContent="訂正";
+   setRuby($("#correction"),"訂正");
    $("#message").style.color="#c63d3d";
-   $("#message").textContent="答錯了，再算一次";
+   setVerticalMessage("答錯了，再算一次");
    // 清空答案讓孩子重新訂正，但保留同一題
    $$(".answer-cell").forEach(x=>x.textContent="");
    selected=null; $$(".selected").forEach(x=>x.classList.remove("selected"));
@@ -265,16 +463,16 @@ function showResults(){
  $("#practice").classList.add("hidden");
  $("#modes").classList.add("hidden");
  $("#results").classList.add("show");
- $("#correction").textContent="";
+ $("#correction").innerHTML="";
  const correctCount=records.filter(r=>r.correct).length;
  $("#progress").textContent="10/10";
- $("#score").textContent=`分數：${correctCount*10} 分（${correctCount}/10）`;
+ $("#score").innerHTML=`${rubyText("分數")}：${correctCount*10} ${rubyText("分")}（${correctCount}/10）`;
  $("#resultList").innerHTML=records.map(r=>{
    const sign=r.op==="add"?"＋":"－";
    return `<div class="result-item ${r.correct?"ok":"bad"}">
      <b>${r.no}.</b>
      <span>${r.a} ${sign} ${r.b} ＝ ${r.answer}</span>
-     <span class="status">${r.correct?"✓ 正確":"✗ 曾答錯"}</span>
+     <span class="status">${r.correct?"✓ "+rubyText("正確"):"✗ "+rubyText("曾答錯")}</span>
    </div>`;
  }).join("");
 }
@@ -286,6 +484,14 @@ function resetSession(){
  newProblem();
 }
 $("#restart").onclick=resetSession;
+
+setRuby($("#titleRuby"),"直式計算練習");
+$$(".mode").forEach(b=>setRuby(b,b.dataset.label));
+setRuby($("#hintRuby"),"點選格子，再用下面的數字鍵盤填寫");
+
+setRuby($("#noteRuby"),"十位數按一下可劃線，再按一次取消");
+setRuby($("#restartRuby"),"再練 10 題");
+
 newProblem();
 </script>
 </body>
