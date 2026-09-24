@@ -228,6 +228,154 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
 .mode .bpmf,#next .bpmf,.key.clear .bpmf{font-size:.38em}
 .mode,.key.clear{line-height:1}
 
+
+/* ===== 手機專用版面修正 ===== */
+@media (max-width: 480px){
+  .app{
+    width:100%;
+    max-width:none;
+    padding:6px 7px;
+  }
+
+  h1{font-size:18px;margin-bottom:5px}
+  .modes{gap:5px}
+  .mode{padding:7px 3px}
+
+  .work-area{margin-top:5px}
+  .board{
+    position:relative;
+    width:100%;
+    padding:4px 48px 4px;
+    overflow:visible;
+  }
+
+  /* 中央算式縮到手機可容納的最大尺寸，不壓左右控制 */
+  .sum{
+    width:252px;
+    max-width:100%;
+    margin:auto;
+  }
+  .row{
+    height:61px;
+    grid-template-columns:34px repeat(3,66px);
+  }
+  .carry-row{
+    height:41px;
+    margin-bottom:14px;
+  }
+  .digit,.answer-cell{
+    width:58px;
+    height:56px;
+    font-size:41px;
+  }
+  .carry-cell{
+    width:58px;
+    height:39px;
+    font-size:29px;
+  }
+  .op{font-size:43px}
+  .rule{
+    margin-left:34px;
+    width:198px;
+  }
+
+  #borrowWrap{
+    width:58px;
+    height:56px;
+  }
+  #topOnes.borrowed #borrowWrap{
+    height:96px;
+    margin-top:-40px;
+    padding-top:39px;
+  }
+
+  /* 右側下一題固定貼邊，不參與中央算式寬度 */
+  #next{
+    right:2px;
+    width:43px;
+    min-height:184px;
+    padding:6px 1px;
+  }
+  .next-unit{
+    width:40px;
+    grid-template-rows:23px 12px;
+  }
+  .next-unit b{
+    width:40px;
+    font-size:21px;
+    line-height:23px;
+  }
+  .next-unit small{
+    width:40px;
+    font-size:8px;
+    line-height:9px;
+  }
+
+  /* 左側提示也固定貼邊 */
+  .vertical-message{
+    left:2px;
+    width:43px;
+    font-size:16px;
+  }
+  .vertical-message .zhuyin .han{
+    font-size:17px;
+    line-height:18px;
+  }
+  .vertical-message .zhuyin .bpmf{
+    font-size:7px;
+    line-height:8px;
+  }
+  .vertical-message .plain-char{
+    font-size:16px;
+    line-height:18px;
+  }
+
+  /* 「最前面數字／不用填0」兩欄提醒限制在左側區域向內展開 */
+  .vertical-message.two-lines{
+    left:0;
+    width:86px;
+    gap:2px;
+    transform:translateY(-50%);
+    justify-content:flex-start;
+  }
+  .vertical-message.two-lines .message-line{
+    width:40px;
+  }
+
+  .keyboard{
+    width:100%;
+    max-width:none;
+    gap:5px;
+    margin-top:5px;
+  }
+  .key{
+    padding:8px 2px;
+    font-size:20px;
+  }
+}
+
+/* 特別窄的手機 */
+@media (max-width: 360px){
+  .board{padding-left:43px;padding-right:43px}
+  .sum{width:232px}
+  .row{
+    grid-template-columns:30px repeat(3,61px);
+    height:57px;
+  }
+  .digit,.answer-cell{
+    width:54px;
+    height:52px;
+    font-size:38px;
+  }
+  .carry-cell{width:54px;height:36px;font-size:27px}
+  .op{font-size:40px}
+  .rule{margin-left:30px;width:183px}
+  #next{width:40px}
+  .vertical-message{width:40px}
+  .vertical-message.two-lines{width:80px}
+  .vertical-message.two-lines .message-line{width:38px}
+}
+
 </style>
 </head>
 <body>
