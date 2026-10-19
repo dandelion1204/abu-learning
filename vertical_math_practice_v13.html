@@ -9,168 +9,43 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC",sans-serif;background:var(--bg);color:var(--ink)}
-.app{max-width:560px;height:100dvh;margin:auto;padding:8px 11px;display:flex;flex-direction:column}
-h1{text-align:center;font-size:25px;margin:0 0 7px}
-#correction{font-size:15px;color:var(--bad);margin-left:7px}
+.app{max-width:620px;height:100dvh;margin:auto;padding:8px 11px;display:flex;flex-direction:column}
+h1{display:flex;align-items:center;justify-content:center;gap:7px;font-size:25px;margin:0 0 7px}
+#correction{font-size:15px;color:var(--bad);margin-left:2px}
+.digit-modes{display:inline-flex;gap:5px;margin-left:5px}
+.digit-mode{padding:4px 9px;font-size:15px;border-width:2px}
+.digit-mode.active{background:var(--accent);font-weight:700}
 .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:10px;padding:9px 8px;touch-action:manipulation}
 .mode.active{background:var(--accent);font-weight:700}
 .work-area{position:relative;flex:1;min-height:0;margin-top:8px}
-.board{height:100%;background:var(--card);border-radius:18px;padding:6px 68px 5px 68px;box-shadow:0 4px 16px #0000000d;display:flex;flex-direction:column}
+.board{height:100%;background:var(--card);border-radius:18px;padding:6px 68px 5px 68px;box-shadow:0 4px 16px #0000000d;display:flex;flex-direction:column;overflow:visible}
 .hint{text-align:center;font-size:11px;color:#737e90;margin:0}
-.sum{width:360px;margin:auto;position:relative}
-.row{height:80px;display:grid;grid-template-columns:48px repeat(3,86px);align-items:center;justify-content:center}
-/* 刻意保留空隙：上方小框與被加數／被減數十位數不要貼在一起 */
-.carry-row{height:55px;margin-bottom:22px}
+.sum{width:min(500px,100%);margin:auto;position:relative}
+.row{height:70px;display:grid;grid-template-columns:48px repeat(4,86px);align-items:center;justify-content:center}
+.carry-row{height:48px;margin-bottom:18px}
 .op{font-size:56px;text-align:center}
-.digit,.answer-cell,.carry-cell{width:76px;height:74px;display:flex;align-items:center;justify-content:center;font-size:54px;position:relative}
-.carry-cell{height:52px;font-size:38px;border:3px solid #9ba8ba;border-radius:11px;background:#fff;cursor:pointer}
+.digit,.answer-cell,.carry-cell{width:76px;height:64px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative}
+.carry-cell{height:46px;font-size:30px;border:3px solid #9ba8ba;border-radius:11px;background:#fff;cursor:pointer}
 .crossable{border:3px solid #c6cedb;border-radius:10px;background:#fff;cursor:pointer}
 .crossable.crossed::after{content:"";position:absolute;width:88px;height:4px;background:#d55252;transform:rotate(-28deg);border-radius:3px}
-.borrow-ten{display:none}
-#borrowWrap{
- position:relative;
- width:76px;
- height:74px;
- display:flex;
- align-items:center;
- justify-content:center;
-}
-#topOnes.borrowed #borrowWrap{
- height:124px;
- margin-top:-50px;
- padding-top:49px;
- border:4px solid #168ca4;
- border-radius:20px;
-}
-#topOnes.borrowed .borrow-ten{
- display:block;
- position:absolute;
- top:2px;
- left:50%;
- transform:translateX(-50%);
- font-size:20px;
- line-height:1;
- font-weight:700;
- color:#168ca4;
-}
-.rule{height:4px;background:var(--ink);margin:0 0 5px 48px;width:258px}
-.answer-cell{border:3px solid #7d899b;border-radius:12px;margin:0 5px;font-size:52px;background:#fff;cursor:pointer}
+.rule{height:4px;background:var(--ink);margin:0 0 5px 0;width:0}
+.answer-cell{border:3px solid #7d899b;border-radius:12px;margin:0 5px;font-size:48px;background:#fff;cursor:pointer}
 .answer-cell.selected,.carry-cell.selected{outline:4px solid #b7d8ff}
 .message{font-weight:700}
-.vertical-message{
- position:absolute;
- left:5px;
- top:50%;
- transform:translateY(-50%);
- width:58px;
- min-height:0;
- margin:0;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- text-align:center;
- font-size:18px;
- line-height:1.05;
- color:#c63d3d;
- z-index:2;
-}
-
-.vertical-message.two-lines{
- width:116px;
- flex-direction:row;
- align-items:center;
- justify-content:center;
- gap:5px;
-}
-.vertical-message .message-line{
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
-}
-
-.vertical-message .zhuyin{
- display:flex;
- flex-direction:column;
- align-items:center;
- margin:2px 0;
-}
-.vertical-message .zhuyin .han{
- font-size:19px;
- line-height:21px;
-}
-.vertical-message .zhuyin .bpmf{
- font-size:9px;
- line-height:10px;
- margin-top:3px;
-}
-.vertical-message .plain-char{
- display:block;
- margin:2px 0;
- font-size:18px;
- line-height:20px;
-}
-#next{
- position:absolute;
- right:4px;
- top:50%;
- transform:translateY(-50%);
- width:58px;
- min-height:210px;
- margin:0;
- padding:8px 3px;
- font-weight:700;
- background:#f2f2f2;
- z-index:2;
-}
-.next-vertical{
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- gap:9px;
-}
-.next-unit{
- display:grid;
- grid-template-rows:22px 11px;
- place-items:center;
- width:50px;
- line-height:1;
-}
-.next-unit b{
- display:block;
- width:50px;
- text-align:center;
- font-size:25px;
- line-height:27px;
- font-weight:700;
-}
-.next-unit small{
- display:block;
- width:50px;
- margin:4px 0 0;
- padding:0;
- text-align:center;
- font-size:10px;
- line-height:10px;
- font-weight:500;
- color:#737e90;
- white-space:nowrap;
- letter-spacing:0;
-}
-
-#next span{display:inline}
+.vertical-message{position:absolute;left:5px;top:50%;transform:translateY(-50%);width:58px;min-height:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:18px;line-height:1.05;color:#c63d3d;z-index:2}
+#next{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:58px;min-height:210px;margin:0;padding:8px 3px;font-weight:700;background:#f2f2f2;z-index:2}
+.next-vertical{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
+.next-unit{display:grid;place-items:center;width:50px;line-height:1}
+.next-unit b{display:block;width:50px;text-align:center;font-size:25px;line-height:27px;font-weight:700}
+.next-unit small{display:none}
 .keyboard{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:430px;margin:7px auto 0}
 .key{font-size:21px;padding:9px 2px;min-width:0}
 .key.clear{font-size:15px;background:#f3e8ff;grid-column:span 2}
 .note{text-align:center;color:#7a8494;font-size:10px;margin-top:2px}
-
-/* 成績畫面 */
 .results{display:none;overflow:auto;height:100%;padding:6px 3px 15px}
 .results.show{display:block}
-.practice.hidden,.modes.hidden{display:none}
+.practice.hidden,.modes.hidden,.digit-modes.hidden{display:none}
 .score{text-align:center;font-size:27px;font-weight:800;margin:12px 0 14px}
 .result-list{display:grid;gap:7px}
 .result-item{display:grid;grid-template-columns:36px 1fr auto;align-items:center;padding:9px 11px;background:#fff;border:1px solid #d7dce4;border-radius:10px;font-size:17px}
@@ -183,541 +58,358 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  h1{font-size:18px;margin-bottom:4px}
  .app{padding-top:5px}.work-area{margin-top:5px}
  .board{padding-top:3px;padding-bottom:3px}.hint,.note{display:none}
- .sum{width:318px}
- .row{height:69px;grid-template-columns:42px repeat(3,76px)}
- .carry-row{height:47px;margin-bottom:17px}
- .digit,.answer-cell{width:67px;height:64px;font-size:47px}
- .carry-cell{width:67px;height:46px;font-size:34px}
+ .row{height:61px;grid-template-columns:42px repeat(4,72px)}
+ .carry-row{height:41px;margin-bottom:14px}
+ .digit,.answer-cell{width:64px;height:56px;font-size:43px}
+ .carry-cell{width:64px;height:39px;font-size:27px}
  .op{font-size:49px}
- .rule{margin-left:42px;width:228px}
+ .rule{margin-left:0;width:0}
  .keyboard{margin-top:4px}.key{padding:6px 2px}
 }
-
-/* 國字右側直式注音 */
-.zhuyin{
- display:inline-flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- vertical-align:middle;
- white-space:nowrap;
- line-height:1;
- margin:0 .02em;
+@media(max-width:480px){
+ .app{width:100%;max-width:none;padding:6px 7px}
+ h1{font-size:18px;margin-bottom:5px;gap:3px}
+ .digit-modes{gap:3px;margin-left:2px}
+ .digit-mode{padding:5px 7px;font-size:14px}
+ .modes{gap:5px}.mode{padding:7px 3px}
+ .work-area{margin-top:5px}
+ .board{position:relative;width:100%;padding:4px 45px;overflow:visible}
+ .sum{width:100%;max-width:100%}
+ .row{height:61px;grid-template-columns:28px repeat(4,minmax(0,1fr))}
+ .carry-row{height:41px;margin-bottom:14px}
+ .digit,.answer-cell{width:min(58px,calc((100vw - 125px)/4));height:56px;font-size:39px}
+ .carry-cell{width:min(58px,calc((100vw - 125px)/4));height:38px;font-size:25px}
+ .op{font-size:40px}
+ .rule{margin-left:0;width:0;max-width:none}
+ #next{right:2px;width:40px;min-height:184px;padding:6px 1px}
+ .next-unit{width:36px}
+ .next-unit b{width:36px;font-size:21px;line-height:23px}
+ .vertical-message{left:2px;width:40px;font-size:15px}
+ .keyboard{gap:5px;margin-top:5px}
+ .key{padding:7px 2px;font-size:20px}
 }
-.zhuyin .han{
- display:block;
- line-height:1.05;
+@media(max-width:360px){
+ .app{padding-left:5px;padding-right:5px}
+ h1{font-size:16px}
+ .digit-mode{padding:4px 6px;font-size:13px}
+ .board{padding-left:40px;padding-right:40px}
+ .row{grid-template-columns:24px repeat(4,minmax(0,1fr));height:57px}
+ .carry-row{height:38px;margin-bottom:12px}
+ .digit,.answer-cell{width:min(54px,calc((100vw - 105px)/4));height:52px;font-size:35px}
+ .carry-cell{width:min(54px,calc((100vw - 105px)/4));height:35px;font-size:23px}
+ .op{font-size:37px}
+ .rule{margin-left:0;width:0}
+ #next{width:36px}
+ .vertical-message{width:36px;font-size:14px}
 }
-.zhuyin .bpmf{
- display:block;
- writing-mode:horizontal-tb;
- text-orientation:mixed;
- font-size:.34em;
- line-height:1;
- margin-top:.20em;
- letter-spacing:0;
- font-weight:500;
- color:#6f7888;
-}
-.zhuyin-word{
- display:inline-flex;
- align-items:flex-start;
- gap:.05em;
- white-space:nowrap;
-}
-.mode .bpmf,#next .bpmf,.key.clear .bpmf{font-size:.38em}
-.mode,.key.clear{line-height:1}
-
-
-/* ===== 手機專用版面修正 ===== */
-@media (max-width: 480px){
-  .app{
-    width:100%;
-    max-width:none;
-    padding:6px 7px;
-  }
-
-  h1{font-size:18px;margin-bottom:5px}
-  .modes{gap:5px}
-  .mode{padding:7px 3px}
-
-  .work-area{margin-top:5px}
-  .board{
-    position:relative;
-    width:100%;
-    padding:4px 48px 4px;
-    overflow:visible;
-  }
-
-  /* 中央算式縮到手機可容納的最大尺寸，不壓左右控制 */
-  .sum{
-    width:252px;
-    max-width:100%;
-    margin:auto;
-  }
-  .row{
-    height:61px;
-    grid-template-columns:34px repeat(3,66px);
-  }
-  .carry-row{
-    height:41px;
-    margin-bottom:14px;
-  }
-  .digit,.answer-cell{
-    width:58px;
-    height:56px;
-    font-size:41px;
-  }
-  .carry-cell{
-    width:58px;
-    height:39px;
-    font-size:29px;
-  }
-  .op{font-size:43px}
-  .rule{
-    margin-left:34px;
-    width:198px;
-  }
-
-  #borrowWrap{
-    width:58px;
-    height:56px;
-  }
-  #topOnes.borrowed #borrowWrap{
-    height:96px;
-    margin-top:-40px;
-    padding-top:39px;
-  }
-
-  /* 右側下一題固定貼邊，不參與中央算式寬度 */
-  #next{
-    right:2px;
-    width:43px;
-    min-height:184px;
-    padding:6px 1px;
-  }
-  .next-unit{
-    width:40px;
-    grid-template-rows:23px 12px;
-  }
-  .next-unit b{
-    width:40px;
-    font-size:21px;
-    line-height:23px;
-  }
-  .next-unit small{
-    width:40px;
-    font-size:8px;
-    line-height:9px;
-  }
-
-  /* 左側提示也固定貼邊 */
-  .vertical-message{
-    left:2px;
-    width:43px;
-    font-size:16px;
-  }
-  .vertical-message .zhuyin .han{
-    font-size:17px;
-    line-height:18px;
-  }
-  .vertical-message .zhuyin .bpmf{
-    font-size:7px;
-    line-height:8px;
-  }
-  .vertical-message .plain-char{
-    font-size:16px;
-    line-height:18px;
-  }
-
-  /* 「最前面數字／不用填0」兩欄提醒限制在左側區域向內展開 */
-  .vertical-message.two-lines{
-    left:0;
-    width:86px;
-    gap:2px;
-    transform:translateY(-50%);
-    justify-content:flex-start;
-  }
-  .vertical-message.two-lines .message-line{
-    width:40px;
-  }
-
-  .keyboard{
-    width:100%;
-    max-width:none;
-    gap:5px;
-    margin-top:5px;
-  }
-  .key{
-    padding:8px 2px;
-    font-size:20px;
-  }
-}
-
-/* 特別窄的手機 */
-@media (max-width: 360px){
-  .board{padding-left:43px;padding-right:43px}
-  .sum{width:232px}
-  .row{
-    grid-template-columns:30px repeat(3,61px);
-    height:57px;
-  }
-  .digit,.answer-cell{
-    width:54px;
-    height:52px;
-    font-size:38px;
-  }
-  .carry-cell{width:54px;height:36px;font-size:27px}
-  .op{font-size:40px}
-  .rule{margin-left:30px;width:183px}
-  #next{width:40px}
-  .vertical-message{width:40px}
-  .vertical-message.two-lines{width:80px}
-  .vertical-message.two-lines .message-line{width:38px}
-}
-
-
-@media (max-width: 480px){
-  .board{
-    padding-left:45px;
-    padding-right:45px;
-  }
-  .sum{
-    width:min(278px, calc(100vw - 104px));
-    max-width:none;
-  }
-  .row{
-    height:66px;
-    grid-template-columns:34px repeat(3, minmax(0, 1fr));
-  }
-  .carry-row{
-    height:44px;
-    margin-bottom:15px;
-  }
-  .digit,.answer-cell{
-    width:min(64px, calc((100vw - 125px)/3));
-    height:61px;
-    font-size:45px;
-  }
-  .carry-cell{
-    width:min(64px, calc((100vw - 125px)/3));
-    height:43px;
-    font-size:32px;
-  }
-  .op{font-size:47px}
-  .rule{
-    margin-left:34px;
-    width:calc(100% - 34px);
-    max-width:222px;
-  }
-  #borrowWrap{
-    width:min(64px, calc((100vw - 125px)/3));
-    height:61px;
-  }
-  #topOnes.borrowed #borrowWrap{
-    height:103px;
-    margin-top:-42px;
-    padding-top:41px;
-  }
-
-  .keyboard{
-    grid-template-columns:repeat(3,1fr);
-    gap:5px;
-    width:100%;
-    margin-top:5px;
-  }
-  .key{
-    padding:7px 2px;
-    font-size:20px;
-  }
-}
-
-/* 窄手機只縮到剛好能容納，不改結構 */
-@media (max-width: 360px){
-  .board{padding-left:41px;padding-right:41px}
-  .sum{width:calc(100vw - 92px)}
-  .row{
-    height:61px;
-    grid-template-columns:30px repeat(3,minmax(0,1fr));
-  }
-  .digit,.answer-cell{
-    width:min(58px, calc((100vw - 110px)/3));
-    height:56px;
-    font-size:41px;
-  }
-  .carry-cell{
-    width:min(58px, calc((100vw - 110px)/3));
-    height:39px;
-    font-size:29px;
-  }
-  .op{font-size:43px}
-  .rule{margin-left:30px;width:calc(100% - 30px)}
-}
-
 </style>
 </head>
 <body>
 <main class="app">
-<h1><span id="progress">1/10</span> <span id="titleRuby"></span> <span id="correction"></span></h1>
+<h1>
+  <span id="progress">1/10</span>
+  <span>直式計算練習</span>
+  <span id="correction"></span>
+  <span class="digit-modes" id="digitModes">
+    <button class="digit-mode active" data-digits="2">2位</button>
+    <button class="digit-mode" data-digits="4">4位</button>
+  </span>
+</h1>
 
 <div class="modes" id="modes">
- <button class="mode" data-mode="add" data-label="加法"></button>
- <button class="mode" data-mode="sub" data-label="減法"></button>
- <button class="mode active" data-mode="mix" data-label="綜合"></button>
+ <button class="mode" data-mode="add">加法</button>
+ <button class="mode" data-mode="sub">減法</button>
+ <button class="mode active" data-mode="mix">綜合</button>
 </div>
 
 <div class="practice" id="practice">
  <div class="work-area">
   <section class="board">
-   <div class="hint" id="hintRuby"></div>
-   <div class="sum">
-    <div class="row carry-row">
-     <div></div><div></div><div id="carry" class="carry-cell"></div><div></div>
-    </div>
-    <div class="row">
-     <div></div><div></div><div id="topTens" class="digit crossable"></div><div id="topOnes" class="digit"><span id="borrowWrap"><span class="borrow-ten">10</span><span id="onesValue"></span></span></div>
-    </div>
-    <div class="row">
-     <div id="operator" class="op">＋</div><div></div><div id="bottomTens" class="digit"></div><div id="bottomOnes" class="digit"></div>
-    </div>
-    <div class="rule"></div>
-    <div class="row">
-     <div></div>
-     <div class="answer-cell" data-pos="2"></div>
-     <div class="answer-cell" data-pos="1"></div>
-     <div class="answer-cell" data-pos="0"></div>
-    </div>
+   <div class="hint" id="hint">點選格子，再用下面的數字鍵盤填寫</div>
+   <div class="sum" id="sum">
+    <div class="row carry-row" id="carryRow"></div>
+    <div class="row" id="topRow"></div>
+    <div class="row" id="bottomRow"></div>
+    <div class="rule" id="rule"></div>
+    <div class="row" id="answerRow"></div>
    </div>
    <div id="message" class="message vertical-message"></div>
    <button id="next" aria-label="下一題">
- <span class="next-vertical">
-  <span class="next-unit"><b>下</b><small>ㄒㄧㄚˋ</small></span>
-  <span class="next-unit"><b>一</b><small>ㄧ</small></span>
-  <span class="next-unit"><b>題</b><small>ㄊㄧˊ</small></span>
- </span>
-</button>
+     <span class="next-vertical"><span class="next-unit"><b>下</b></span><span class="next-unit"><b>一</b></span><span class="next-unit"><b>題</b></span></span>
+   </button>
   </section>
  </div>
  <div class="keyboard" id="keyboard"></div>
- <div class="note" id="noteRuby"></div>
+ <div class="note" id="note">被加數/被減數數字按一下可劃線，再按一次取消</div>
 </div>
 
 <section class="results" id="results">
  <div class="score" id="score"></div>
  <div class="result-list" id="resultList"></div>
- <button class="restart" id="restart"><span id="restartRuby"></span></button>
+ <button class="restart" id="restart">再練 10 題</button>
 </section>
 </main>
 
 <script>
+const TOTAL_QUESTIONS = 10;
+let mode="mix", digitCount=2, current={}, selected=null, questionNo=1, records=[], correcting=false;
+let questionOpsQueue = []; // 用於整輪 10 題的運算題型排程
 
-const ZHUYIN={
- "加":"ㄐㄧㄚ","法":"ㄈㄚˇ","減":"ㄐㄧㄢˇ","綜":"ㄗㄨㄥˋ","合":"ㄏㄜˊ",
- "直":"ㄓˊ","式":"ㄕˋ","計":"ㄐㄧˋ","算":"ㄙㄨㄢˋ","練":"ㄌㄧㄢˋ","習":"ㄒㄧˊ",
- "訂":"ㄉㄧㄥˋ","正":"ㄓㄥˋ","點":"ㄉㄧㄢˇ","選":"ㄒㄩㄢˇ","格":"ㄍㄜˊ",
- "子":"ㄗ˙","再":"ㄗㄞˋ","用":"ㄩㄥˋ","下":"ㄒㄧㄚˋ","面":"ㄇㄧㄢˋ",
- "的":"ㄉㄜ˙","數":"ㄕㄨˋ","字":"ㄗˋ","鍵":"ㄐㄧㄢˋ","盤":"ㄆㄢˊ",
- "填":"ㄊㄧㄢˊ","寫":"ㄒㄧㄝˇ","一":"ㄧ","題":"ㄊㄧˊ","清":"ㄑㄧㄥ","除":"ㄔㄨˊ",
- "十":"ㄕˊ","位":"ㄨㄟˋ","按":"ㄢˋ","可":"ㄎㄜˇ","劃":"ㄏㄨㄚˋ","線":"ㄒㄧㄢˋ",
- "取":"ㄑㄩˇ","消":"ㄒㄧㄠ","先":"ㄒㄧㄢ","答":"ㄉㄚˊ","案":"ㄢˋ","喔":"ㄛ",
- "錯":"ㄘㄨㄛˋ","了":"ㄌㄜ˙","次":"ㄘˋ","最":"ㄗㄨㄟˋ","前":"ㄑㄧㄢˊ",
- "不":"ㄅㄨˋ","分":"ㄈㄣ","曾":"ㄘㄥˊ","對":"ㄉㄨㄟˋ","確":"ㄑㄩㄝˋ",
- "開":"ㄎㄞ","始":"ㄕˇ"
-};
-function rubyText(text){
- return [...text].map(ch=>{
-   const z=ZHUYIN[ch];
-   return z ? `<span class="zhuyin"><span class="han">${ch}</span><span class="bpmf">${z}</span></span>` : ch;
- }).join("");
-}
-function setRuby(el,text){ el.innerHTML=rubyText(text); }
-function verticalChars(text){
- return [...text].map(ch=>{
-   const z=ZHUYIN[ch];
-   if(z){
-     return `<span class="zhuyin"><span class="han">${ch}</span><span class="bpmf">${z}</span></span>`;
-   }
-   if(ch===" ") return "";
-   return `<span class="plain-char">${ch}</span>`;
- }).join("");
-}
-function setVerticalMessage(text){
- const el=$("#message");
- if(!text){el.innerHTML="";return;}
-
- // 前導 0 提醒固定分兩行／兩列顯示：
- // 最前面數字
- // 不用填0
- if(text==="最前面的數字不用填 0 喔"){
-   el.classList.add("two-lines");
-   el.innerHTML=
-     `<span class="message-line">${verticalChars("最前面數字")}</span>`+
-     `<span class="message-line">${verticalChars("不用填0")}</span>`;
-   return;
- }
- el.classList.remove("two-lines");
- el.innerHTML=verticalChars(text);
-}
-
-let mode="mix", current={}, selected=null, questionNo=1, records=[], correcting=false;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-function newProblem(){
- let op=mode==="mix"?(Math.random()<.5?"add":"sub"):mode,a,b;
- if(op==="add"){a=rand(10,99);b=rand(10,99)}
- else{a=rand(20,99);b=rand(10,a-1)}
- current={a,b,op,answer:op==="add"?a+b:a-b, firstWrong:false};
- correcting=false; render();
+// Fisher-Yates 洗牌演算法
+function shuffle(array){
+  for(let i=array.length-1; i>0; i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
-function render(){
- $("#progress").textContent=questionNo+"/10";
- setRuby($("#correction"), correcting?"訂正":"");
- $("#topTens").textContent=Math.floor(current.a/10);
- $("#onesValue").textContent=current.a%10;
- $("#topOnes").classList.remove("borrowed");
- $("#bottomTens").textContent=Math.floor(current.b/10);
- $("#bottomOnes").textContent=current.b%10;
- $("#operator").textContent=current.op==="add"?"＋":"－";
- $("#topTens").classList.remove("crossed");
- $("#carry").textContent="";
- $$(".answer-cell").forEach(x=>x.textContent="");
- $$(".selected").forEach(x=>x.classList.remove("selected"));
- selected=null; $("#message").textContent="";
-}
-function selectCell(el){
- $$(".selected").forEach(x=>x.classList.remove("selected"));
- selected=el; el.classList.add("selected");
-}
-$("#carry").onclick=()=>selectCell($("#carry"));
-$$(".answer-cell").forEach(el=>el.onclick=()=>selectCell(el));
-$("#topTens").onclick=()=>$("#topTens").classList.toggle("crossed");
 
-$$(".mode").forEach(btn=>btn.onclick=()=>{
- mode=btn.dataset.mode;
- $$(".mode").forEach(x=>x.classList.toggle("active",x===btn));
- resetSession();
-});
+// 建立整輪 10 題的運算題型隊列
+function buildQuestionQueue(){
+  if(mode === "mix"){
+    // 嚴格確保 5 題加法與 5 題減法
+    const ops = Array(5).fill("add").concat(Array(5).fill("sub"));
+    questionOpsQueue = shuffle(ops);
+  } else if(mode === "add"){
+    questionOpsQueue = Array(TOTAL_QUESTIONS).fill("add");
+  } else if(mode === "sub"){
+    questionOpsQueue = Array(TOTAL_QUESTIONS).fill("sub");
+  }
+}
+
+function newProblem(){
+  const opIndex = questionNo - 1;
+  const op = questionOpsQueue[opIndex] || (Math.random() < 0.5 ? "add" : "sub");
+
+  // 2位數模式：10 ~ 100；4位數模式：1000 ~ 10000
+  const min = Math.pow(10, digitCount - 1);
+  const max = Math.pow(10, digitCount); // 包含 100 或 10000
+  let a, b;
+  if(op === "add"){
+    a = rand(min, max);
+    b = rand(min, max);
+  } else {
+    a = rand(min, max);
+    b = rand(min, a - 1);
+  }
+  current = {a, b, op, answer: op === "add" ? a + b : a - b, firstWrong: false};
+  correcting = false;
+  render();
+}
+
+function render(){
+  $("#progress").textContent = `${questionNo}/${TOTAL_QUESTIONS}`;
+  $("#correction").textContent = correcting ? "訂正" : "";
+
+  // 算式欄位依題目中最大的數字位數決定（處理 100 或 10000 的情況）
+  const operandCols = Math.max(digitCount, String(current.a).length, String(current.b).length);
+  const top = String(current.a).padStart(operandCols, " ");
+  const bottom = String(current.b).padStart(operandCols, " ");
+  const answerDigits = String(current.answer).length;
+  const answerCols = Math.max(operandCols, answerDigits);
+
+  const carryRow=$("#carryRow"), topRow=$("#topRow"), bottomRow=$("#bottomRow"), answerRow=$("#answerRow");
+  [carryRow,topRow,bottomRow,answerRow].forEach(r=>r.innerHTML="");
+
+  const makeBlank=()=>document.createElement("div");
+  carryRow.appendChild(makeBlank());
+  topRow.appendChild(makeBlank());
+
+  const op=document.createElement("div");
+  op.className="op";
+  op.textContent=current.op==="add"?"＋":"－";
+  bottomRow.appendChild(op);
+
+  answerRow.appendChild(makeBlank());
+
+  // 由左至右顯示，實際輸入位置仍以個位數為 0
+  for(let i=0; i<operandCols; i++){
+    const pos = operandCols - 1 - i;
+
+    const carry = document.createElement("div");
+    carry.className = "carry-cell";
+    carry.dataset.pos = pos;
+    carryRow.appendChild(carry);
+
+    const t = document.createElement("div");
+    t.className = "digit" + (top[i] !== " " ? " crossable" : "");
+    t.textContent = top[i] !== " " ? top[i] : "";
+    t.dataset.pos = pos;
+    topRow.appendChild(t);
+
+    const b = document.createElement("div");
+    b.className = "digit";
+    b.textContent = bottom[i] !== " " ? bottom[i] : "";
+    bottomRow.appendChild(b);
+  }
+
+  // 答案列
+  for(let i=0; i<answerCols; i++){
+    const ans = document.createElement("div");
+    ans.className = "answer-cell";
+    ans.dataset.pos = answerCols - 1 - i;
+    answerRow.appendChild(ans);
+  }
+
+  const setGrid=(row,cols)=>row.style.gridTemplateColumns=`48px repeat(${cols},86px)`;
+  setGrid(carryRow, operandCols);
+  setGrid(topRow, operandCols);
+  setGrid(bottomRow, operandCols);
+
+  // 答案與算式共用同一個「運算符欄 + 數字欄」座標系
+  // 多一位時，答案列向左平移一個數字欄（86px），讓個位精準對齊個位
+  setGrid(answerRow, answerCols);
+  answerRow.style.marginLeft = answerCols > operandCols ? `-${(answerCols - operandCols) * 86}px` : "0";
+
+  // 等式線與置中的算式欄位對齊
+  const sumWidth = $("#sum").clientWidth;
+  const equationWidth = 48 + operandCols * 86;
+  const equationLeft = Math.max(0, (sumWidth - equationWidth) / 2);
+  $("#rule").style.width = `${equationWidth}px`;
+  $("#rule").style.marginLeft = `${equationLeft}px`;
+
+  $$(".carry-cell").forEach(el=>el.onclick=()=>selectCell(el));
+  $$(".answer-cell").forEach(el=>el.onclick=()=>selectCell(el));
+  $$(".crossable").forEach(el=>el.onclick=()=>el.classList.toggle("crossed"));
+
+  selected=null;
+  $("#message").textContent="";
+}
+
+function selectCell(el){
+  $$(".selected").forEach(x=>x.classList.remove("selected"));
+  selected=el;
+  el.classList.add("selected");
+}
 
 function inputDigit(n){
- if(!selected)return;
+  if(!selected) return;
+  $("#message").textContent = "";
+  selected.textContent = n;
 
- $("#message").textContent="";
- selected.textContent=n;
+  // 1. 若填寫上方進位/借位格 (carry-cell):
+  //    填十位上方 (pos=1) -> 跳轉到答案列個位 (pos=0)
+  //    填百位上方 (pos=2) -> 跳轉到答案列十位 (pos=1)
+  //    以此類推: pos=k -> 自動跳轉至 answer-cell[data-pos="k-1"]
+  if(selected.classList.contains("carry-cell")){
+    const p = Number(selected.dataset.pos);
+    if(p > 0){
+      const targetAns = $(`.answer-cell[data-pos="${p - 1}"]`);
+      if(targetAns){
+        selectCell(targetAns);
+        return;
+      }
+    }
+  }
 
- // 十位數上方的小框一填入數字，就把個位數視覺化成「10 + 原個位數」。
- // 藍框把上方的 10 與原本個位數一起圈起來。
- if(selected.id==="carry"){
-   // 只有減法借位才顯示「10＋個位數」藍框。
-   // 加法填上方小框時，不顯示 10，也不顯示藍框。
-   if(current.op==="sub"){
-     $("#topOnes").classList.add("borrowed");
-
-     // 填完借位後，自動跳到答案個位數。
-     const onesAnswer=$('.answer-cell[data-pos="0"]');
-     if(onesAnswer) selectCell(onesAnswer);
-     return;
-   }else{
-     $("#topOnes").classList.remove("borrowed");
-   }
- }
-
- if(selected.classList.contains("answer-cell")){
-  const p=Number(selected.dataset.pos), next=$(`.answer-cell[data-pos="${p-1}"]`);
-  if(next)selectCell(next);
- }
+  // 2. 若填寫答案列格 (answer-cell):
+  //    若由高位向低位填寫，依序移往下一低位
+  if(selected.classList.contains("answer-cell")){
+    const p = Number(selected.dataset.pos);
+    const next = $(`.answer-cell[data-pos="${p - 1}"]`);
+    if(next) selectCell(next);
+  }
 }
-function typedAnswer(){
- const cells=$$(".answer-cell");
- const str=cells.map(x=>x.textContent).join("");
- if(str==="") return null;
- return { raw:str, value:Number(str) };
-}
+
 const kb=$("#keyboard");
 [1,2,3,4,5,6,7,8,9,0].forEach(n=>{
- let b=document.createElement("button");b.className="key";b.textContent=n;b.onclick=()=>inputDigit(n);kb.appendChild(b);
+  const b=document.createElement("button");
+  b.className="key"; b.textContent=n; b.onclick=()=>inputDigit(n);
+  kb.appendChild(b);
 });
-let clear=document.createElement("button");
-clear.className="key clear";setRuby(clear,"清除");
+const clear=document.createElement("button");
+clear.className="key clear"; clear.textContent="清除";
 clear.onclick=()=>{
- if(selected){
-   selected.textContent="";
-   if(selected.id==="carry") $("#topOnes").classList.remove("borrowed");
- }else{
-   $("#carry").textContent="";
-   $("#topOnes").classList.remove("borrowed");
-   $$(".answer-cell").forEach(x=>x.textContent="")
- }
+  if(selected){selected.textContent="";}
+  else $$(".answer-cell").forEach(x=>x.textContent="");
 };
 kb.appendChild(clear);
 
+function typedAnswer(){
+  const cells=$$(".answer-cell");
+  const str=cells.map(x=>x.textContent).join("");
+  if(str==="")return null;
+  return {raw:str,value:Number(str)};
+}
 
-/* 「下一題」同時負責判斷答案；不另外占一個檢查答案按鈕 */
 $("#next").onclick=()=>{
- const ans=typedAnswer();
- if(ans===null){$("#message").style.color="#c63d3d";setVerticalMessage("先填答案喔");return}
+  const ans=typedAnswer();
+  if(ans===null){
+    $("#message").style.color="#c63d3d";
+    $("#message").textContent="先填答案喔";
+    return;
+  }
+  if(ans.raw.length>1 && ans.raw.startsWith("0")){
+    $("#message").style.color="#c63d3d";
+    $("#message").textContent="最前面的數字不用填 0 喔";
+    return;
+  }
+  if(ans.value!==current.answer){
+    current.firstWrong=true;
+    correcting=true;
+    $("#correction").textContent="訂正";
+    $("#message").style.color="#c63d3d";
+    $("#message").textContent="答錯了，再算一次";
+    $$(".answer-cell").forEach(x=>x.textContent="");
+    selected=null;
+    $$(".selected").forEach(x=>x.classList.remove("selected"));
+    return;
+  }
 
- // 送出時才檢查前導 0：
- // 單獨的「0」合法；但 08、05、013 這類寫法不接受。
- if(ans.raw.length>1 && ans.raw.startsWith("0")){
-   $("#message").style.color="#c63d3d";
-   setVerticalMessage("最前面的數字不用填 0 喔");
-   return;
- }
-
- if(ans.value!==current.answer){
-   current.firstWrong=true;
-   correcting=true;
-   setRuby($("#correction"),"訂正");
-   $("#message").style.color="#c63d3d";
-   setVerticalMessage("答錯了，再算一次");
-   // 清空答案讓孩子重新訂正，但保留同一題
-   $$(".answer-cell").forEach(x=>x.textContent="");
-   selected=null; $$(".selected").forEach(x=>x.classList.remove("selected"));
-   return;
- }
- // 答對；若曾答錯，該題紀錄仍為錯誤
- records.push({
-   no:questionNo,a:current.a,b:current.b,op:current.op,
-   answer:current.answer,correct:!current.firstWrong
- });
- if(questionNo>=10){showResults();return}
- questionNo++; newProblem();
+  records.push({no:questionNo,a:current.a,b:current.b,op:current.op,answer:current.answer,correct:!current.firstWrong});
+  if(questionNo>=TOTAL_QUESTIONS){showResults();return}
+  questionNo++;
+  newProblem();
 };
 
+$$(".mode").forEach(btn=>btn.onclick=()=>{
+  mode=btn.dataset.mode;
+  $$(".mode").forEach(x=>x.classList.toggle("active",x===btn));
+  resetSession();
+});
+
+$$(".digit-mode").forEach(btn=>btn.onclick=()=>{
+  digitCount=Number(btn.dataset.digits);
+  $$(".digit-mode").forEach(x=>x.classList.toggle("active",x===btn));
+  resetSession();
+});
+
 function showResults(){
- $("#practice").classList.add("hidden");
- $("#modes").classList.add("hidden");
- $("#results").classList.add("show");
- $("#correction").innerHTML="";
- const correctCount=records.filter(r=>r.correct).length;
- $("#progress").textContent="10/10";
- $("#score").innerHTML=`${rubyText("分數")}：${correctCount*10} ${rubyText("分")}（${correctCount}/10）`;
- $("#resultList").innerHTML=records.map(r=>{
-   const sign=r.op==="add"?"＋":"－";
-   return `<div class="result-item ${r.correct?"ok":"bad"}">
-     <b>${r.no}.</b>
-     <span>${r.a} ${sign} ${r.b} ＝ ${r.answer}</span>
-     <span class="status">${r.correct?"✓ "+rubyText("正確"):"✗ "+rubyText("曾答錯")}</span>
-   </div>`;
- }).join("");
+  $("#practice").classList.add("hidden");
+  $("#modes").classList.add("hidden");
+  $("#digitModes").classList.add("hidden");
+  $("#results").classList.add("show");
+  $("#correction").textContent="";
+  const correctCount=records.filter(r=>r.correct).length;
+  $("#progress").textContent=`${TOTAL_QUESTIONS}/${TOTAL_QUESTIONS}`;
+  $("#score").textContent=`分數：${correctCount*10} 分（${correctCount}/${TOTAL_QUESTIONS}）`;
+  $("#resultList").innerHTML=records.map(r=>{
+    const sign=r.op==="add"?"＋":"－";
+    return `<div class="result-item ${r.correct?"ok":"bad"}">
+      <b>${r.no}.</b>
+      <span>${r.a} ${sign} ${r.b} ＝ ${r.answer}</span>
+      <span class="status">${r.correct?"✓ 正確":"✗ 曾答錯"}</span>
+    </div>`;
+  }).join("");
 }
+
 function resetSession(){
- questionNo=1;records=[];correcting=false;
- $("#practice").classList.remove("hidden");
- $("#modes").classList.remove("hidden");
- $("#results").classList.remove("show");
- newProblem();
+  questionNo=1;records=[];correcting=false;
+  $("#practice").classList.remove("hidden");
+  $("#modes").classList.remove("hidden");
+  $("#digitModes").classList.remove("hidden");
+  $("#results").classList.remove("show");
+  buildQuestionQueue();
+  newProblem();
 }
+
 $("#restart").onclick=resetSession;
 
-setRuby($("#titleRuby"),"直式計算練習");
-$$(".mode").forEach(b=>setRuby(b,b.dataset.label));
-setRuby($("#hintRuby"),"點選格子，再用下面的數字鍵盤填寫");
-
-setRuby($("#noteRuby"),"十位數按一下可劃線，再按一次取消");
-setRuby($("#restartRuby"),"再練 10 題");
-
+// 頁面初次載入執行
+buildQuestionQueue();
 newProblem();
 </script>
 </body>
