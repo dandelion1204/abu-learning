@@ -34,10 +34,10 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
 .answer-cell.selected,.carry-cell.selected{outline:4px solid #b7d8ff}
 .message{font-weight:700}
 .vertical-message{position:absolute;left:5px;top:50%;transform:translateY(-50%);width:58px;min-height:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:18px;line-height:1.05;color:#c63d3d;z-index:2}
-#next{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:58px;min-height:210px;margin:0;padding:8px 3px;font-weight:700;background:#f2f2f2;z-index:2}
-.next-vertical{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
-.next-unit{display:grid;place-items:center;width:50px;line-height:1}
-.next-unit b{display:block;width:50px;text-align:center;font-size:25px;line-height:27px;font-weight:700}
+#next{display:block;width:100%;max-width:430px;min-height:0;margin:6px auto 0;padding:9px 12px;font-weight:700;background:#f2f2f2}
+.next-vertical{display:flex;align-items:center;justify-content:center}
+.next-unit{display:grid;place-items:center;line-height:1}
+.next-unit b{display:block;text-align:center;font-size:20px;line-height:24px;font-weight:700}
 .next-unit small{display:none}
 .keyboard{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:430px;margin:7px auto 0}
 .key{font-size:21px;padding:9px 2px;min-width:0}
@@ -81,9 +81,6 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  .carry-cell{width:min(58px,calc((100vw - 125px)/4));height:38px;font-size:25px}
  .op{font-size:40px}
  .rule{margin-left:0;width:0;max-width:none}
- #next{right:2px;width:40px;min-height:184px;padding:6px 1px}
- .next-unit{width:36px}
- .next-unit b{width:36px;font-size:21px;line-height:23px}
  .vertical-message{left:2px;width:40px;font-size:15px}
  .keyboard{gap:5px;margin-top:5px}
  .key{padding:7px 2px;font-size:20px}
@@ -99,7 +96,6 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  .carry-cell{width:min(54px,calc((100vw - 105px)/4));height:35px;font-size:23px}
  .op{font-size:37px}
  .rule{margin-left:0;width:0}
- #next{width:36px}
  .vertical-message{width:36px;font-size:14px}
 }
 </style>
@@ -134,12 +130,10 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
     <div class="row" id="answerRow"></div>
    </div>
    <div id="message" class="message vertical-message"></div>
-   <button id="next" aria-label="下一題">
-     <span class="next-vertical"><span class="next-unit"><b>下</b></span><span class="next-unit"><b>一</b></span><span class="next-unit"><b>題</b></span></span>
-   </button>
   </section>
  </div>
  <div class="keyboard" id="keyboard"></div>
+ <button id="next" aria-label="下一題">下一題</button>
  <div class="note" id="note">被加數/被減數數字按一下可劃線，再按一次取消</div>
 </div>
 
