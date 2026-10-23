@@ -73,12 +73,12 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  .digit-mode{padding:5px 7px;font-size:14px}
  .modes{gap:5px}.mode{padding:7px 3px}
  .work-area{margin-top:5px}
- .board{position:relative;width:100%;padding:4px 45px;overflow:visible}
+ .board{position:relative;width:100%;padding:4px 8px;overflow:visible}
  .sum{width:100%;max-width:100%}
  .row{height:61px;grid-template-columns:28px repeat(4,minmax(0,1fr))}
  .carry-row{height:41px;margin-bottom:14px}
- .digit,.answer-cell{width:min(58px,calc((100vw - 125px)/4));height:56px;font-size:39px}
- .carry-cell{width:min(58px,calc((100vw - 125px)/4));height:38px;font-size:25px}
+ .digit,.answer-cell{width:100%;min-width:0;height:56px;font-size:clamp(25px,8vw,39px);margin:0}
+ .carry-cell{width:100%;min-width:0;height:38px;font-size:clamp(22px,7vw,25px)}
  .op{font-size:40px}
  .rule{margin-left:0;width:0;max-width:none}
  .vertical-message{left:2px;width:40px;font-size:15px}
@@ -89,11 +89,11 @@ button{font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line
  .app{padding-left:5px;padding-right:5px}
  h1{font-size:16px}
  .digit-mode{padding:4px 6px;font-size:13px}
- .board{padding-left:40px;padding-right:40px}
+ .board{padding-left:6px;padding-right:6px}
  .row{grid-template-columns:24px repeat(4,minmax(0,1fr));height:57px}
  .carry-row{height:38px;margin-bottom:12px}
- .digit,.answer-cell{width:min(54px,calc((100vw - 105px)/4));height:52px;font-size:35px}
- .carry-cell{width:min(54px,calc((100vw - 105px)/4));height:35px;font-size:23px}
+ .digit,.answer-cell{width:100%;min-width:0;height:52px;font-size:clamp(23px,7.5vw,35px);margin:0}
+ .carry-cell{width:100%;min-width:0;height:35px;font-size:clamp(20px,7vw,23px)}
  .op{font-size:37px}
  .rule{margin-left:0;width:0}
  .vertical-message{width:36px;font-size:14px}
@@ -248,7 +248,11 @@ function render(){
     answerRow.appendChild(ans);
   }
 
-  const setGrid=(row,cols)=>row.style.gridTemplateColumns=`48px repeat(${cols},86px)`;
+  const setGrid=(row,cols)=>{
+    row.style.gridTemplateColumns = window.matchMedia("(max-width: 480px)").matches
+      ? `28px repeat(${cols}, minmax(0, 1fr))`
+      : `48px repeat(${cols}, 86px)`;
+  };
   setGrid(carryRow, operandCols);
   setGrid(topRow, operandCols);
   setGrid(bottomRow, operandCols);
@@ -256,7 +260,7 @@ function render(){
   // 答案與算式共用同一個「運算符欄 + 數字欄」座標系
   // 多一位時，答案列向左平移一個數字欄（86px），讓個位精準對齊個位
   setGrid(answerRow, answerCols);
-  answerRow.style.marginLeft = answerCols > operandCols ? `-${(answerCols - operandCols) * 86}px` : "0";
+  answerRow.style.marginLeft = answerCols > operandCols ? (window.matchMedia("(max-width: 480px)").matches ? "0" : `-${(answerCols - operandCols) * 86}px`) : "0";
 
   // 等式線與置中的算式欄位對齊
   const sumWidth = $("#sum").clientWidth;
