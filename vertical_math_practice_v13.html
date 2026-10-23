@@ -219,6 +219,15 @@ function render(){
 
   answerRow.appendChild(makeBlank());
 
+  // 所有列使用相同欄位數，讓個位、十位、百位垂直對齊
+  const commonCols = Math.max(operandCols, answerCols);
+  const leadingBlanks = commonCols - operandCols;
+  for(let i=0; i<leadingBlanks; i++){
+    carryRow.appendChild(makeBlank());
+    topRow.appendChild(makeBlank());
+    bottomRow.appendChild(makeBlank());
+  }
+
   // 由左至右顯示，實際輸入位置仍以個位數為 0
   for(let i=0; i<operandCols; i++){
     const pos = operandCols - 1 - i;
@@ -253,14 +262,13 @@ function render(){
       ? `28px repeat(${cols}, minmax(0, 1fr))`
       : `48px repeat(${cols}, 86px)`;
   };
-  setGrid(carryRow, operandCols);
-  setGrid(topRow, operandCols);
-  setGrid(bottomRow, operandCols);
+  setGrid(carryRow, commonCols);
+  setGrid(topRow, commonCols);
+  setGrid(bottomRow, commonCols);
 
-  // 答案與算式共用同一個「運算符欄 + 數字欄」座標系
-  // 多一位時，答案列向左平移一個數字欄（86px），讓個位精準對齊個位
-  setGrid(answerRow, answerCols);
-  answerRow.style.marginLeft = answerCols > operandCols ? (window.matchMedia("(max-width: 480px)").matches ? "0" : `-${(answerCols - operandCols) * 86}px`) : "0";
+  // 答案列與算式列共用相同欄位座標，個位對個位、十位對十位、百位對百位
+  setGrid(answerRow, commonCols);
+  answerRow.style.marginLeft = "0";
 
   // 等式線與置中的算式欄位對齊
   const sumWidth = $("#sum").clientWidth;
